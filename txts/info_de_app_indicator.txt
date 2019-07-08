@@ -1,0 +1,1 @@
+Aquí se almacenarán los archivos txt de salida. 
