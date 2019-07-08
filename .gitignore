@@ -1,4 +1,6 @@
 # Ignorando archivos de salida:
 .directory
 .git/
-info_gpus.txt
+txts/info_gpus.txt
+txts/info_gpus_full.txt
+txts/PID_process.txt
