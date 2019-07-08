@@ -5,7 +5,6 @@ Está programado en Python y fue probado en Kubuntu 18.04 LTS, pero nada impide 
 ## DEPENDENCIAS
 - gir1.2-appindicator3-0.1 (sudo apt install gir1.2-appindicator3-0.1)
 - mesa-utils (sudo apt install mesa-utils)
-- kate (sudo apt install kate)
 
 ## REQUISITOS MINIMOS
 - Linux Ubuntu 14.04 (Kernel 3.13) 64-bit [Se recomienda Kubuntu 18.04]

@@ -1,0 +1,4 @@
+# Ignorando archivos de salida:
+.directory
+.git/
+info_gpus.txt
