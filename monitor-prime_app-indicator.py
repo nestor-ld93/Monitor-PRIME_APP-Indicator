@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #=========================================================================
-# MONITOR PRIME - APP INDICATOR v0.2.6
-# Copyleft: quantum-phy (Nestor), 06/07/2019
+# MONITOR PRIME - APP INDICATOR v0.2.8
+# Copyleft: quantum-phy (Nestor), 24/12/2019
 #=========================================================================
 
 #This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,8 @@
 #=========================================================================
 # REQUISITOS MINIMOS:
 # - Linux Ubuntu 14.04 (Kernel 3.13) 64-bit [Se recomienda Kubuntu 18.04]
-# - Drivers Open-Source (Mesa)
+# - Drivers Open-Source (Mesa) para GPUs Intel, AMD & Nvidia
+# - Driver Privativos (Nvidia-Prime) para GPUs Nvidia
 #=========================================================================
 
 import os.path
@@ -38,6 +39,9 @@ from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Notify as notify
 
 APPINDICATOR_ID = 'MONITOR PRIME - APP INDICATOR'
+archivo_prime_select = '/usr/bin/prime-select' #<=============== Para Nvidia Prime
+archivo_mesa_prime = '/sys/kernel/debug/vgaswitcheroo/switch' #<=============== Para PRIME (Mesa)
+
 IMG_video_card = 'imgs/video-card.svg'
 IMG_intel_logo = 'imgs/Intel-logo.svg'
 IMG_amd_radeon_logo = 'imgs/AMD_Radeon_graphics_logo_2016.svg'
@@ -50,25 +54,62 @@ editor_texto = "kate"
 def main():
     indicator = appindicator.Indicator.new(APPINDICATOR_ID, os.path.abspath(IMG_video_card), appindicator.IndicatorCategory.SYSTEM_SERVICES)
     indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
-    indicator.set_menu(build_menu())
+    #if (os.path.exists(archivo_mesa_prime)): #<=============== Para PRIME (Mesa)
+    driver = 'mesa_prime'
+    #else:
+    if (os.path.exists(archivo_prime_select)): #<=============== Para Nvidia Prime
+        driver = 'nvidia_prime'
+    indicator.set_menu(build_menu(driver))
     notify.init(APPINDICATOR_ID)
     gtk.main()
 
-def build_menu():
+def build_menu(driver):
     menu = gtk.Menu()
-    item_state = gtk.MenuItem('Estado de GPU')
-    item_state.connect('activate', notificacion_estado)
-    menu.append(item_state)
+    if (driver == 'mesa_prime'):
+        item_state = gtk.MenuItem('Estado de GPU')
+        item_state.connect('activate', notificacion_estado)
+        menu.append(item_state)
+        
+        item_apps_dGPU = gtk.MenuItem('Aplicaciones en dGPU')
+        item_apps_dGPU.connect('activate', notificacion_apps_dGPU)
+        menu.append(item_apps_dGPU)
+        
+        item_info_full_GPU = gtk.MenuItem('Informacion de GPUs')
+        item_info_full_GPU.connect('activate', info_full_GPU)
+        menu.append(item_info_full_GPU)
+    else:
+        if (driver == 'nvidia_prime'):
+            item_state = gtk.MenuItem('Estado de GPU')
+            item_state.connect('activate', notificacion_estado_Nvidia_Prime)
+            menu.append(item_state)
+            
+            #item_apps_dGPU = gtk.MenuItem('Aplicaciones en dGPU')
+            #item_apps_dGPU.connect('activate', notificacion_apps_dGPU_Nvidia_Prime)
+            #menu.append(item_apps_dGPU)
+            
+            submenu = gtk.Menu()
+            menu_prime_select = gtk.MenuItem('NVIDIA Prime')
+            menu.append(menu_prime_select)
+            menu_prime_select.set_submenu(submenu)
+            
+            item_nvidia_settings = gtk.MenuItem('NVIDIA X Server Settings')
+            item_nvidia_settings.connect('activate', Nvidia_Prime_settings)
+            #item_prime_select_intel = gtk.CheckMenuItem("Intel")
+            #item_prime_select_intel.set_active(True)
+            
+            item_nvidia_smi = gtk.MenuItem('NVIDIA SMI')
+            item_nvidia_smi.connect('activate', Nvidia_Prime_smi)
+            #item_prime_select_nvidia = gtk.CheckMenuItem("Nvidia")
+            #item_prime_select_nvidia.set_active(False)
+            submenu.append(item_nvidia_settings)
+            submenu.append(item_nvidia_smi)
+            
+            item_info_full_GPU = gtk.MenuItem('Informacion de GPUs')
+            item_info_full_GPU.connect('activate', info_full_GPU_Nvidia_Prime)
+            menu.append(item_info_full_GPU)
     
-### NUEVO!!!!!!!!!!!! (06/07/2019)
-    item_apps_dGPU = gtk.MenuItem('Aplicaciones en dGPU')
-    item_apps_dGPU.connect('activate', notificacion_apps_dGPU)
-    menu.append(item_apps_dGPU)
-    
-    item_info_full_GPU = gtk.MenuItem('Informacion de GPUs')
-    item_info_full_GPU.connect('activate', info_full_GPU)
-    menu.append(item_info_full_GPU)
-### NUEVO!!!!!!!!!!!! (06/07/2019)
+    separador = gtk.SeparatorMenuItem()
+    menu.append(separador)
     
     item_quit = gtk.MenuItem('Salir')
     item_quit.connect('activate', quit)
@@ -76,7 +117,15 @@ def build_menu():
     menu.show_all()
     return menu
 
-### NUEVO!!!!!!!!!!!! (06/07/2019)
+def Nvidia_Prime_settings(_):
+    comando1 = '/usr/bin/nvidia-settings'
+    process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
+    return
+
+def Nvidia_Prime_smi(_):
+    comando2 = 'nvidia-smi' 
+    process = subprocess.Popen(comando2, shell=True)
+    return
 
 def info_full_GPU(_):
     comando_info1 = "glxinfo -B"
@@ -114,6 +163,40 @@ def info_full_GPU(_):
         escribir_info_archivo(comando_info2,archivo_info_gpus_full)
         escribir_info_archivo(separador,archivo_info_gpus_full)
         process = subprocess.Popen(editor_texto+" "+archivo_info_gpus_full, stdout=subprocess.PIPE, stderr=None, shell=True)
+    
+    return
+
+def info_full_GPU_Nvidia_Prime(_): #<=============== Para Nvidia Prime
+    output_nvidia_select = buscar_Nvidia_Prime_Select()
+    comando_info1 = "glxinfo -B"
+    comando_del = "rm "
+    comando_del += archivo_info_gpus_full
+    separador = "echo '============================================================'"
+    
+    if(output_nvidia_select=='intel\n' or output_nvidia_select=='amd\n'):
+        cabecero = "echo 'INFO. iGPU'"
+    else:
+        if(output_nvidia_select=='nvidia\n'):
+            cabecero = "echo 'INFO. dGPU'"
+    
+    if (os.path.exists(archivo_info_gpus_full)):
+        process = subprocess.Popen(comando_del, stdout=subprocess.PIPE, stderr=None, shell=True)
+        
+        escribir_info_archivo(separador,archivo_info_gpus_full)
+        escribir_info_archivo(cabecero,archivo_info_gpus_full)
+        escribir_info_archivo(separador,archivo_info_gpus_full)
+        escribir_info_archivo(comando_info1,archivo_info_gpus_full)
+        escribir_info_archivo(separador,archivo_info_gpus_full)
+        process = subprocess.Popen(editor_texto+" "+archivo_info_gpus_full, stdout=subprocess.PIPE, stderr=None, shell=True)
+        
+    else:
+        escribir_info_archivo(separador,archivo_info_gpus_full)
+        escribir_info_archivo(cabecero,archivo_info_gpus_full)
+        escribir_info_archivo(separador,archivo_info_gpus_full)
+        escribir_info_archivo(comando_info1,archivo_info_gpus_full)
+        escribir_info_archivo(separador,archivo_info_gpus_full)
+        process = subprocess.Popen(editor_texto+" "+archivo_info_gpus_full, stdout=subprocess.PIPE, stderr=None, shell=True)
+    
     return
 
 def notificacion_apps_dGPU(_):
@@ -174,28 +257,64 @@ def mostrar_PRIME_dGPU(output2,PID_and_name):
     else:
         notify.Notification.new('Aplicaciones renderizadas en el dGPU:', 'Ninguna\n', os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
     return
-### NUEVO!!!!!!!!!!!! (06/07/2019)
+
+#def notificacion_apps_dGPU_Nvidia_Prime(_): #<=============== Para Nvidia Prime
+#    print('\n--------->Apps en dGPU Nvidia - ESTADO: PENDIENTE<---------')
+#    return
 
 def buscar_estado():
-    command = 'sudo cat /sys/kernel/debug/vgaswitcheroo/switch'
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
-    output = process.communicate()
+    command  = 'sudo cat '
+    command += archivo_mesa_prime
+    process  = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
+    output   = process.communicate()
     
     output1 = output[0].find("DynOff")
     output2 = output[0].find("DynPwr")
     return output1, output2
 
+def buscar_Nvidia_Prime_Select(): #<=============== Para Nvidia Prime
+    command = 'prime-select query'
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
+    output_nvidia_select = process.communicate()[0]
+    return output_nvidia_select
+    
+def notificacion_estado_Nvidia_Prime(_): #<=============== Para Nvidia Prime
+    output_nvidia_select = buscar_Nvidia_Prime_Select()
+    
+    comando1 = 'lspci -k | grep -A 2 -i "VGA"'
+    
+    if (os.path.exists(archivo_info_gpus)):
+        if(output_nvidia_select=='intel\n' or output_nvidia_select=='amd\n'):
+            notify.Notification.new('GPU renderizador [Mesa]: iGPU', mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[0], os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[2])).show()
+        else:
+            if(output_nvidia_select=='nvidia\n'):
+                notify.Notification.new('GPU renderizador [Nvidia Prime]: dGPU', mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[1], os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[3])).show()
+    
+    else:
+        escribir_info_archivo(comando1,archivo_info_gpus)
+        if(output_nvidia_select=='intel\n' or output_nvidia_select=='amd\n'):
+            notify.Notification.new('GPU renderizador [Mesa]: iGPU', mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[0], os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[2])).show()
+        else:
+            if(output_nvidia_select=='nvidia\n'):
+                notify.Notification.new('GPU renderizador [Nvidia Prime]: dGPU', mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[1], os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[3])).show()
+    
 def notificacion_estado(_):
     output = buscar_estado()
+    
     comando1 = 'glxinfo | grep "Vendor"'
     comando2 = 'glxinfo | grep "Device"'
     comando3 = 'lspci -v -s 00:02.0 | grep "Subsystem"'
     comando4 = 'DRI_PRIME=1 glxinfo | grep "Vendor"'
     comando5 = 'DRI_PRIME=1 glxinfo | grep "Device"'
     comando6 = 'lspci -v -s 01:00.0 | grep "Subsystem"'
-
+    
     if (os.path.exists(archivo_info_gpus)):
-        mostrar_info_GPU(archivo_info_gpus)
+        if(output[0]>=0):
+            notify.Notification.new('GPU renderizador [Mesa]: iGPU', mostrar_info_GPU(archivo_info_gpus)[0], os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[2])).show()
+        else:
+            if(output[1]>=0):
+                notify.Notification.new('GPU renderizador [Mesa]: dGPU', mostrar_info_GPU(archivo_info_gpus)[1], os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
+    
     else:
         escribir_info_archivo(comando1,archivo_info_gpus)
         escribir_info_archivo(comando2,archivo_info_gpus)
@@ -205,13 +324,13 @@ def notificacion_estado(_):
         escribir_info_archivo(comando5,archivo_info_gpus)
         escribir_info_archivo(comando6,archivo_info_gpus)
         mostrar_info_GPU(archivo_info_gpus)
-    
-    if(output[0]>=0):
-        notify.Notification.new('GPU renderizador: iGPU', mostrar_info_GPU(archivo_info_gpus)[0], os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[2])).show()
-    else:
-        if(output[1]>=0):
-            notify.Notification.new('GPU renderizador: dGPU', mostrar_info_GPU(archivo_info_gpus)[1], os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
-
+        
+        if(output[0]>=0):
+            notify.Notification.new('GPU renderizador [Mesa]: iGPU', mostrar_info_GPU(archivo_info_gpus)[0], os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[2])).show()
+        else:
+            if(output[1]>=0):
+                notify.Notification.new('GPU renderizador [Mesa]: dGPU', mostrar_info_GPU(archivo_info_gpus)[1], os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
+        
 def mostrar_info_GPU(archivo_info_gpus):
     output0 = buscar_info_archivo(0,archivo_info_gpus)
     if(output0[0]>=0):
@@ -221,8 +340,28 @@ def mostrar_info_GPU(archivo_info_gpus):
         if(output0[1]>=0 or output0[2]>=0):
             texto0 = output0[5]
             logo0 = IMG_amd_radeon_logo
-            
+    
     output1 = buscar_info_archivo(4,archivo_info_gpus)
+    if(output1[1]>=0 or output1[2]>=0):
+        texto1 = output0[6]
+        logo1 = IMG_amd_radeon_logo
+    else:
+        if(output1[3]>=0 or output1[4]>=0):
+            texto1 = output0[6]
+            logo1 = IMG_nvidia_geforce_logo
+    return texto0, texto1, logo0, logo1
+
+def mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus): #<=============== Para Nvidia Prime
+    output0 = buscar_info_archivo_Nvidia_Prime(0,archivo_info_gpus)
+    if(output0[0]>=0):
+        texto0 = output0[5]
+        logo0 = IMG_intel_logo
+    else:
+        if(output0[1]>=0 or output0[2]>=0):
+            texto0 = output0[5]
+            logo0 = IMG_amd_radeon_logo
+    
+    output1 = buscar_info_archivo_Nvidia_Prime(4,archivo_info_gpus)
     if(output1[1]>=0 or output1[2]>=0):
         texto1 = output0[6]
         logo1 = IMG_amd_radeon_logo
@@ -257,6 +396,24 @@ def buscar_info_archivo(i,archivo_info_gpus):
     output3 = linea[i].find("1022") #AMD
     output4 = linea[i].find("10DE") #Nvidia
     output5 = linea[i].find("10de") #Nvidia
+    return output1, output2, output3, output4, output5, nombre_gpu0, nombre_gpu1
+
+def buscar_info_archivo_Nvidia_Prime(i,archivo_info_gpus): #<=============== Para Nvidia Prime
+    archivo = open(archivo_info_gpus,'r')
+    linea = archivo.readlines()
+    archivo.close()
+    
+    nombre_gpu0 = linea[0]
+    nombre_gpu1 = linea[5]
+    
+    nombre_gpu0 = nombre_gpu0[35:]
+    nombre_gpu1 = nombre_gpu1[12:]
+    
+    output1 = linea[i].find("Intel") #Intel
+    output2 = linea[i].find("AMD") #AMD
+    output3 = linea[i].find("Radeon") #AMD
+    output4 = linea[i].find("Nvidia") #Nvidia
+    output5 = linea[i].find("NVIDIA") #Nvidia
     return output1, output2, output3, output4, output5, nombre_gpu0, nombre_gpu1
 
 def quit(_):
