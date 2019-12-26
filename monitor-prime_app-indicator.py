@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #=========================================================================
-# MONITOR PRIME - APP INDICATOR v0.2.8
-# Copyleft: quantum-phy (Nestor), 24/12/2019
+# MONITOR PRIME - APP INDICATOR v0.3.1
+# Copyleft: quantum-phy (Nestor), 25/12/2019
 #=========================================================================
 
 #This program is free software: you can redistribute it and/or modify
@@ -37,6 +37,8 @@ import subprocess
 from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Notify as notify
+
+__VERSION__ = '0.3.1'
 
 APPINDICATOR_ID = 'MONITOR PRIME - APP INDICATOR'
 archivo_prime_select = '/usr/bin/prime-select' #<=============== Para Nvidia Prime
@@ -79,29 +81,71 @@ def build_menu(driver):
         menu.append(item_info_full_GPU)
     else:
         if (driver == 'nvidia_prime'):
+            output_nvidia_select = Estado_Nvidia_Prime_Select()
+            capacidad_on_demand = prime_select_capacidad_on_demand()
+            
             item_state = gtk.MenuItem('Estado de GPU')
-            item_state.connect('activate', notificacion_estado_Nvidia_Prime)
+            item_state.connect('activate', Notificacion_estado_Nvidia_Prime)
             menu.append(item_state)
             
-            #item_apps_dGPU = gtk.MenuItem('Aplicaciones en dGPU')
+            item_apps_dGPU = gtk.MenuItem('Aplicaciones en dGPU')
             #item_apps_dGPU.connect('activate', notificacion_apps_dGPU_Nvidia_Prime)
-            #menu.append(item_apps_dGPU)
+            if (capacidad_on_demand == 'no' or output_nvidia_select=='intel\n' or output_nvidia_select=='nvidia\n' or output_nvidia_select=='amd\n'):
+                item_apps_dGPU.set_sensitive(False)
+            menu.append(item_apps_dGPU)
             
             submenu = gtk.Menu()
             menu_prime_select = gtk.MenuItem('NVIDIA Prime')
             menu.append(menu_prime_select)
             menu_prime_select.set_submenu(submenu)
             
+            ###############################NUEVO
+            
+            item_igpu = gtk.MenuItem('Intel (Modo Ahorro de energia)')
+            item_igpu.connect('activate', prime_select_intel)
+            if (output_nvidia_select=='intel\n'):
+                item_igpu.set_sensitive(False)
+            submenu.append(item_igpu)
+            
+            #if (output_nvidia_select=='amd\n'):
+            #    item_igpu = gtk.MenuItem('AMD (Modo Ahorro de energia)')
+            #    item_igpu.set_sensitive(False)
+            #    item_igpu.connect('activate', prime_select_intel)
+            #    submenu.append(item_igpu)
+            
+            item_nvidia = gtk.MenuItem('NVIDIA (Modo Rendimiento)')
+            item_nvidia.connect('activate', prime_select_nvidia)
+            if (output_nvidia_select=='nvidia\n'):
+                item_nvidia.set_sensitive(False)
+            submenu.append(item_nvidia)
+            
+            item_optimus = gtk.MenuItem('NVIDIA Optimus (Demandado)')
+            item_optimus.connect('activate', prime_select_optimus)
+            if (capacidad_on_demand == 'no'):
+                item_optimus.set_sensitive(False)
+            else:
+                if (capacidad_on_demand == 'yes'):
+                    if (output_nvidia_select=='on-demand\n'):
+                        item_optimus.set_sensitive(False)
+            submenu.append(item_optimus)
+            
+            ###############################NUEVO
+            
+            separador = gtk.SeparatorMenuItem()
+            submenu.append(separador)
+            
             item_nvidia_settings = gtk.MenuItem('NVIDIA X Server Settings')
             item_nvidia_settings.connect('activate', Nvidia_Prime_settings)
-            #item_prime_select_intel = gtk.CheckMenuItem("Intel")
-            #item_prime_select_intel.set_active(True)
+            #item_igpu = gtk.CheckMenuItem('Intel (Modo Ahorro de energia)')
+            #item_igpu.set_active(True)
+            submenu.append(item_nvidia_settings)
             
             item_nvidia_smi = gtk.MenuItem('NVIDIA SMI')
             item_nvidia_smi.connect('activate', Nvidia_Prime_smi)
-            #item_prime_select_nvidia = gtk.CheckMenuItem("Nvidia")
-            #item_prime_select_nvidia.set_active(False)
-            submenu.append(item_nvidia_settings)
+            if (output_nvidia_select=='intel\n'):
+                item_nvidia_smi.set_sensitive(False)
+            #item_nvidia = gtk.CheckMenuItem('NVIDIA (Modo Rendimiento)')
+            #item_nvidia.set_active(False)
             submenu.append(item_nvidia_smi)
             
             item_info_full_GPU = gtk.MenuItem('Informacion de GPUs')
@@ -110,6 +154,10 @@ def build_menu(driver):
     
     separador = gtk.SeparatorMenuItem()
     menu.append(separador)
+    
+    item_acerca = gtk.MenuItem('Acerca')
+    item_acerca.connect('activate', acerca)
+    menu.append(item_acerca)
     
     item_quit = gtk.MenuItem('Salir')
     item_quit.connect('activate', quit)
@@ -126,6 +174,45 @@ def Nvidia_Prime_smi(_):
     comando2 = 'nvidia-smi' 
     process = subprocess.Popen(comando2, shell=True)
     return
+
+def prime_select_intel(_):
+    output_nvidia_select = Estado_Nvidia_Prime_Select()
+    comando1 = 'pkexec prime-select intel'
+    process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
+    notify.Notification.new('GPU Intel (Ahorro de energia) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesion", os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[2])).show()
+    return
+
+def prime_select_nvidia(_):
+    output_nvidia_select = Estado_Nvidia_Prime_Select()
+    comando1 = 'pkexec prime-select nvidia'
+    process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
+    notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesion", os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[3])).show()
+    return
+
+def prime_select_optimus(_):
+    output_nvidia_select = Estado_Nvidia_Prime_Select()
+    comando1 = 'pkexec prime-select on-demand'
+    process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
+    notify.Notification.new('GPU NVIDIA (Optimus) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesion", os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[3])).show()
+    return
+
+def prime_select_capacidad_on_demand():
+    comando = 'prime-select'
+    process = subprocess.Popen(comando, stdout=subprocess.PIPE, stderr=None, shell=True)
+    linea_salida = str(process.communicate())
+    
+    #output1 = linea_salida.find("nvidia")
+    #output2 = linea_salida.find("intel")
+    #output2 = linea_salida.find("amd")
+    output3 = linea_salida.find("on-demand")
+    #output4 = linea_salida.find("query")
+    
+    if (output3 >= 0):
+        capacidad_on_demand = 'si'
+    else:
+        capacidad_on_demand = 'no'
+    
+    return capacidad_on_demand
 
 def info_full_GPU(_):
     comando_info1 = "glxinfo -B"
@@ -167,7 +254,7 @@ def info_full_GPU(_):
     return
 
 def info_full_GPU_Nvidia_Prime(_): #<=============== Para Nvidia Prime
-    output_nvidia_select = buscar_Nvidia_Prime_Select()
+    output_nvidia_select = Estado_Nvidia_Prime_Select()
     comando_info1 = "glxinfo -B"
     comando_del = "rm "
     comando_del += archivo_info_gpus_full
@@ -260,6 +347,7 @@ def mostrar_PRIME_dGPU(output2,PID_and_name):
 
 #def notificacion_apps_dGPU_Nvidia_Prime(_): #<=============== Para Nvidia Prime
 #    print('\n--------->Apps en dGPU Nvidia - ESTADO: PENDIENTE<---------')
+#    print('\n--------->Se continuara cuando se pula el codigo.<---------')
 #    return
 
 def buscar_estado():
@@ -272,14 +360,14 @@ def buscar_estado():
     output2 = output[0].find("DynPwr")
     return output1, output2
 
-def buscar_Nvidia_Prime_Select(): #<=============== Para Nvidia Prime
+def Estado_Nvidia_Prime_Select(): #<=============== Para Nvidia Prime
     command = 'prime-select query'
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
     output_nvidia_select = process.communicate()[0]
     return output_nvidia_select
-    
-def notificacion_estado_Nvidia_Prime(_): #<=============== Para Nvidia Prime
-    output_nvidia_select = buscar_Nvidia_Prime_Select()
+
+def Notificacion_estado_Nvidia_Prime(_): #<=============== Para Nvidia Prime
+    output_nvidia_select = Estado_Nvidia_Prime_Select()
     
     comando1 = 'lspci -k | grep -A 2 -i "VGA"'
     
@@ -415,6 +503,22 @@ def buscar_info_archivo_Nvidia_Prime(i,archivo_info_gpus): #<=============== Par
     output4 = linea[i].find("Nvidia") #Nvidia
     output5 = linea[i].find("NVIDIA") #Nvidia
     return output1, output2, output3, output4, output5, nombre_gpu0, nombre_gpu1
+
+def acerca(_):
+    titulo   = "MONITOR PRIME - APP INDICATOR v0.3.1"
+    mensaje  = "App indicator que muestra el GPU renderizador, PID-Proceso en dGPU, informacion de GPUs "
+    mensaje += "y seleccion de GPUs (Nvidia Prime) en portatiles con graficos hibridos. "
+    mensaje += "\n[Para Drivers Open-Source (Mesa) y Privativos (Nvidia-Prime)]"
+    mensaje += "\n\n---->quantum-phy (Nestor), 25/12/2019<----"
+    mensaje += "\nLicense: Licencia Publica General de GNU, version 3"
+
+    dialog = gtk.MessageDialog(None, gtk.DialogFlags.MODAL, gtk.MessageType.INFO, gtk.ButtonsType.NONE, titulo)
+    dialog.format_secondary_text(mensaje)
+    dialog.set_deletable(False)
+    dialog.add_button("Aceptar", gtk.ResponseType.OK)
+    response = dialog.run()
+    dialog.destroy()
+    return response
 
 def quit(_):
     notify.uninit()

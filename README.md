@@ -7,6 +7,8 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 - Muestra el "Estado de GPU" (GPU renderizador)
 - Muestra las "Aplicaciones en dGPU" (PID y Nombre del proceso)
 - Muestra la "Informacion de GPUs" (Vendor, Device, VRAM, etc.)
+- Permite la selección del iGPU Intel o dGPU NVIDIA (Driver privativo Nvidia Prime)
+- Permite la selección de NVIDIA Optimus (On-Demand) si está disponible (Driver privativo Nvidia Prime 435.17 o superior y una versión de X.Org X server compatible)
 
 ## IMÁGENES PRINCIPALES (en Kubuntu 18.04)
 
@@ -27,7 +29,7 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 ## ¿CÓMO EJECUTAR?
 1. Establecer permisos de ejecución: `chmod +x monitor-prime_app-indicator.py`
 1. Ejecutar en un terminal: `./monitor-prime_app-indicator.py`
-1. Ingresar la contraseña del sistema (en el terminal) cuando se solicite.
+1. Ingresar la contraseña del sistema (en el terminal o en una ventana) cuando se solicite.
 
 ## LISTA DE CAMBIOS
 - (v0.2.3) [21/09/2018] Lanzamiento inicial.
@@ -37,7 +39,15 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 - (v0.2.6) [06/07/2019] Se creó la carpeta "imgs" para almacenar las imágenes utilizadas.
 - (v0.2.6) [06/07/2019] Se creó la carpeta "txts" para almacenar los archivos de salida.
 - (v0.2.6) [06/07/2019] Se realizaron muchas optimizaciones al código.
-- (v0.2.8) [24/12/2019] Se añadió soporte para Nvidia Prime. El menú "Aplicaciones en dGPU" es reemplazado por "NVIDIA SMI" para Nvidia Prime. Se realizaron muchas optimizaciones al código.
+- (v0.2.8) [24/12/2019] Se añadió soporte para Nvidia Prime.
+- (v0.2.8) [24/12/2019] El menú "Aplicaciones en dGPU" es reemplazado por "NVIDIA SMI" para Nvidia Prime.
+- (v0.2.8) [24/12/2019] Se realizaron muchas optimizaciones al código.
+- (v0.3.1) [25/12/2019] El menú "Aplicaciones en dGPU" se encuentra de regreso pero desactivado para Nvidia Prime.
+- (v0.3.1) [25/12/2019] Se agregaron las 03 opciones disponibles de prime-select dentro del menú "Nvidia Prime".
+- (v0.3.1) [25/12/2019] Al seleccionar Intel, NVIDIA o NVIDIA Optimus; aparecerá una ventana solicitando permisos de superusuario.
+- (v0.3.1) [25/12/2019] La opción "NVIDIA Optimus (Demandado)" se encontrará habilitada únicamente en los equipos que lo soporten. Revisar: [Chapter 35. PRIME Render Offload](https://download.nvidia.com/XFree86/Linux-x86_64/435.21/README/primerenderoffload.html).
+- (v0.3.1) [25/12/2019] Se anadió el menú "Acerca".
+- (v0.3.1) [25/12/2019] Se realizaron muchas optimizaciones al código.
 
 ## ENLACES DE INTERÉS
 - Se muestra un ejemplo de su uso en [NotebookGPU](https://notebookgpu.blogspot.com/2018/10/verificar-el-estado-y-configurar.html)
