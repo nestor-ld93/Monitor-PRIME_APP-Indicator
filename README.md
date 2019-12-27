@@ -22,9 +22,14 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 - kate (sudo apt install kate)
 
 ## REQUISITOS MÍNIMOS
-- Linux Ubuntu 14.04 (Kernel 3.13) 64-bit [Se recomienda Kubuntu 18.04]
+- Linux Ubuntu 14.04 (Kernel 3.13) 64-bit [Se recomienda Kubuntu 18.04 o superior]
 - Drivers Open-Source (Mesa) para GPUs Intel, AMD & Nvidia
 - Driver Privativos (Nvidia-Prime) para GPUs Nvidia
+
+## ¿CÓMO DESCARGAR?
+- Para obtener la última versión estable, descargue desde la pestaña "releases".
+- Para obtener la última versión candidata a estable, descargue desde el botón "Clone or download" o ejecute en un terminal:
+`git clone https://github.com/quantum-phy/Monitor-PRIME_APP-Indicator`
 
 ## ¿CÓMO EJECUTAR?
 1. Establecer permisos de ejecución: `chmod +x monitor-prime_app-indicator.py`
@@ -48,6 +53,10 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 - (v0.3.1) [25/12/2019] La opción "NVIDIA Optimus (Demandado)" se encontrará habilitada únicamente en los equipos que lo soporten. Revisar: [Chapter 35. PRIME Render Offload](https://download.nvidia.com/XFree86/Linux-x86_64/435.21/README/primerenderoffload.html).
 - (v0.3.1) [25/12/2019] Se anadió el menú "Acerca".
 - (v0.3.1) [25/12/2019] Se realizaron muchas optimizaciones al código.
+- (v0.3.2) [26/12/2019] Se añadió codificación UTF-8.
+- (v0.3.2) [26/12/2019] El menú "NVIDIA Prime" se muestra con los drivers Mesa pero el primero se encuentra desactivado.
+- (v0.3.2) [26/12/2019] Se corrigió un bug que no permitía la visualización de las aplicaciones en el dGPU (PRIME) si la instalación de GNU/Linux se encontraba en un idioma distinto al español.
+- (v0.3.2) [26/12/2019] Cambios menores en la ventana "Acerca".
 
 ## ENLACES DE INTERÉS
 - Se muestra un ejemplo de su uso en [NotebookGPU](https://notebookgpu.blogspot.com/2018/10/verificar-el-estado-y-configurar.html)

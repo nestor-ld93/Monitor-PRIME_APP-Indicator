@@ -1,7 +1,8 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #=========================================================================
-# MONITOR PRIME - APP INDICATOR v0.3.1
-# Copyleft: quantum-phy (Nestor), 25/12/2019
+# MONITOR PRIME - APP INDICATOR v0.3.2
+# Copyleft: quantum-phy (Néstor), 25/12/2019
 #=========================================================================
 
 #This program is free software: you can redistribute it and/or modify
@@ -38,7 +39,7 @@ from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Notify as notify
 
-__VERSION__ = '0.3.1'
+__VERSION__ = '0.3.2'
 
 APPINDICATOR_ID = 'MONITOR PRIME - APP INDICATOR'
 archivo_prime_select = '/usr/bin/prime-select' #<=============== Para Nvidia Prime
@@ -76,7 +77,19 @@ def build_menu(driver):
         item_apps_dGPU.connect('activate', notificacion_apps_dGPU)
         menu.append(item_apps_dGPU)
         
-        item_info_full_GPU = gtk.MenuItem('Informacion de GPUs')
+        #->>>>>>>>>>>
+        submenu = gtk.Menu()
+        menu_prime_select = gtk.MenuItem('NVIDIA Prime')
+        menu_prime_select.set_sensitive(False)
+        menu.append(menu_prime_select)
+        menu_prime_select.set_submenu(submenu)
+        
+        item_igpu = gtk.MenuItem('Intel (Modo Ahorro de energía)')
+        item_igpu.set_sensitive(False)
+        submenu.append(item_igpu)
+        #->>>>>>>>>>>
+        
+        item_info_full_GPU = gtk.MenuItem('Información de GPUs')
         item_info_full_GPU.connect('activate', info_full_GPU)
         menu.append(item_info_full_GPU)
     else:
@@ -101,7 +114,7 @@ def build_menu(driver):
             
             ###############################NUEVO
             
-            item_igpu = gtk.MenuItem('Intel (Modo Ahorro de energia)')
+            item_igpu = gtk.MenuItem('Intel (Modo Ahorro de energía)')
             item_igpu.connect('activate', prime_select_intel)
             if (output_nvidia_select=='intel\n'):
                 item_igpu.set_sensitive(False)
@@ -148,7 +161,7 @@ def build_menu(driver):
             #item_nvidia.set_active(False)
             submenu.append(item_nvidia_smi)
             
-            item_info_full_GPU = gtk.MenuItem('Informacion de GPUs')
+            item_info_full_GPU = gtk.MenuItem('Información de GPUs')
             item_info_full_GPU.connect('activate', info_full_GPU_Nvidia_Prime)
             menu.append(item_info_full_GPU)
     
@@ -179,21 +192,21 @@ def prime_select_intel(_):
     output_nvidia_select = Estado_Nvidia_Prime_Select()
     comando1 = 'pkexec prime-select intel'
     process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
-    notify.Notification.new('GPU Intel (Ahorro de energia) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesion", os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[2])).show()
+    notify.Notification.new('GPU Intel (Ahorro de energía) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesión", os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[2])).show()
     return
 
 def prime_select_nvidia(_):
     output_nvidia_select = Estado_Nvidia_Prime_Select()
     comando1 = 'pkexec prime-select nvidia'
     process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
-    notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesion", os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[3])).show()
+    notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesión", os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[3])).show()
     return
 
 def prime_select_optimus(_):
     output_nvidia_select = Estado_Nvidia_Prime_Select()
     comando1 = 'pkexec prime-select on-demand'
     process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
-    notify.Notification.new('GPU NVIDIA (Optimus) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesion", os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[3])).show()
+    notify.Notification.new('GPU NVIDIA (Optimus) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesión", os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[3])).show()
     return
 
 def prime_select_capacidad_on_demand():
@@ -319,8 +332,8 @@ def buscar_PRIME_archivo(archivo_info_gpus):
         if (os.path.exists("/proc/"+str(PID1)+"/environ")):
             process = subprocess.Popen(comando2, stdout=subprocess.PIPE, stderr=None, shell=True)
             linea_salida = str(process.communicate())
-            output1 = linea_salida.find("Coincidencia")
-                
+            output1 = linea_salida.find("/proc/"+str(PID1)+"/environ")
+            
             if (output1>=0):
                 output2 = output1
                 PID2 = PID1
@@ -505,20 +518,29 @@ def buscar_info_archivo_Nvidia_Prime(i,archivo_info_gpus): #<=============== Par
     return output1, output2, output3, output4, output5, nombre_gpu0, nombre_gpu1
 
 def acerca(_):
-    titulo   = "MONITOR PRIME - APP INDICATOR v0.3.1"
-    mensaje  = "App indicator que muestra el GPU renderizador, PID-Proceso en dGPU, informacion de GPUs "
-    mensaje += "y seleccion de GPUs (Nvidia Prime) en portatiles con graficos hibridos. "
-    mensaje += "\n[Para Drivers Open-Source (Mesa) y Privativos (Nvidia-Prime)]"
-    mensaje += "\n\n---->quantum-phy (Nestor), 25/12/2019<----"
-    mensaje += "\nLicense: Licencia Publica General de GNU, version 3"
-
-    dialog = gtk.MessageDialog(None, gtk.DialogFlags.MODAL, gtk.MessageType.INFO, gtk.ButtonsType.NONE, titulo)
-    dialog.format_secondary_text(mensaje)
-    dialog.set_deletable(False)
-    dialog.add_button("Aceptar", gtk.ResponseType.OK)
-    response = dialog.run()
-    dialog.destroy()
-    return response
+    autor = ["quantum-phy (Néstor)"]
+    mensaje  = "App indicator que muestra el GPU renderizador, PID-Proceso en dGPU, información de GPUs "
+    mensaje += "y selección de GPUs (Nvidia Prime) en portátiles con gráficos híbridos. "
+    mensaje += "\n[Para Drivers Open-Source (Mesa) y/o Privativos (Nvidia-Prime)]"
+    copyright = "2018-2019 - quantum-phy (Néstor)"
+    licencia = "Licencia Pública General de GNU, versión 3"
+    website = "https://github.com/quantum-phy/Monitor-PRIME_APP-Indicator"
+    website_label = "Sitio web GitHub"
+    
+    about = gtk.AboutDialog()
+    about.set_program_name(APPINDICATOR_ID)
+    about.set_version("v."+__VERSION__)
+    about.set_copyright(copyright)
+    about.set_comments(mensaje)
+    about.set_license(licencia)
+    about.set_authors(autor)
+    about.set_website(website)
+    about.set_website_label(website_label)
+    about.set_logo_icon_name(None)
+    about.run()
+    about.destroy()
+    
+    return
 
 def quit(_):
     notify.uninit()
