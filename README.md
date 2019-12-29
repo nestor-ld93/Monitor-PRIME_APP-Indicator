@@ -6,15 +6,19 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 
 - Muestra el "Estado de GPU" (GPU renderizador)
 - Muestra las "Aplicaciones en dGPU" (PID y Nombre del proceso)
-- Muestra la "Informacion de GPUs" (Vendor, Device, VRAM, etc.)
+- Muestra la "Información de GPUs" (Vendor, Device, VRAM, etc.)
 - Permite la selección del iGPU Intel o dGPU NVIDIA (Driver privativo Nvidia Prime)
 - Permite la selección de NVIDIA Optimus (On-Demand) si está disponible (Driver privativo Nvidia Prime 435.17 o superior y una versión de X.Org X server compatible)
 
-## IMÁGENES PRINCIPALES (en Kubuntu 18.04)
+## IMÁGENES PRINCIPALES (en KDE Neon 5.17)
 
-![app menu](https://lh3.googleusercontent.com/-qWbqLEj9TL8/XSKfgSM7NeI/AAAAAAAAA08/R0-jKBvcdIsy1lUkGrNYauXaFMtt0x37gCLcBGAs/h153/monitor_prime_app_indicator_04.png "Menú principal y sus opciones")
+![app menu](https://lh3.googleusercontent.com/-tAxNuxCPQvQ/XgkeayBPnTI/AAAAAAAAA5k/Pl5qB52-IycZwZDirIT_yMSNLcpESnv-QCLcBGAsYHQ/h195/Menu_mesa-prime_nvidia_prime.png "Menú principal y sus opciones para PRIME y Nvidia Prime")
 
-![app menu](https://lh3.googleusercontent.com/-zOm12GdHN3M/XSKgaWkh31I/AAAAAAAAA1M/3v5WpufGmNkCmfpMq4e6S6HwE9vLJ75wwCLcBGAs/h620/monitor_prime_app_indicator_06.png "Aplicaciones renderizadas en el dGPU")
+![app menu](https://lh3.googleusercontent.com/-Zh8pSgTydfs/XgkeZkQVv0I/AAAAAAAAA5Q/1hBx26ZX8jUjc6PFKqb8OodVLn8J0_CcwCLcBGAsYHQ/h291/Apps_Nvidia.png "Aplicaciones renderizadas en el dGPU")
+
+![app menu](https://lh3.googleusercontent.com/-e6td_2jdSiI/XgkeZmaNRII/AAAAAAAAA5Y/2z1bwjYEZHIKNHPN_XImB_WEzSCUfxaYgCLcBGAsYHQ/h177/Estado_Intel-AMD_OpenSource.png "Estado de GPU con drivers Open-Source")
+
+![app menu](https://lh3.googleusercontent.com/-ARgkCEQ5XUc/XgkearIyYJI/AAAAAAAAA5g/DJR4rURDRxQ9CB0yHdD2PA-j5FPbig5TwCLcBGAsYHQ/h159/Estado_Intel_Nvidia_Nvidia-Prime.png "Estado de GPU con drivers Privativos: Nvidia Prime")
 
 ## DEPENDENCIAS
 - gir1.2-appindicator3-0.1 (sudo apt install gir1.2-appindicator3-0.1)
@@ -57,6 +61,8 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 - (v0.3.2) [26/12/2019] El menú "NVIDIA Prime" se muestra con los drivers Mesa pero el primero se encuentra desactivado.
 - (v0.3.2) [26/12/2019] Se corrigió un bug que no permitía la visualización de las aplicaciones en el dGPU (PRIME) si la instalación de GNU/Linux se encontraba en un idioma distinto al español.
 - (v0.3.2) [26/12/2019] Cambios menores en la ventana "Acerca".
+- (v0.3.3) [29/12/2019] Se añadió la característica "Aplicaciones en dGPU" para Nvidia Prime On-Demand (Nvidia Optimus).
+- (v0.3.3) [29/12/2019] Correcciones menores.
 
 ## ENLACES DE INTERÉS
 - Se muestra un ejemplo de su uso en [NotebookGPU](https://notebookgpu.blogspot.com/2018/10/verificar-el-estado-y-configurar.html)

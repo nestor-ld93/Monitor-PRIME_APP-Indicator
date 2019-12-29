@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #=========================================================================
-# MONITOR PRIME - APP INDICATOR v0.3.2
-# Copyleft: quantum-phy (Néstor), 25/12/2019
+# MONITOR PRIME - APP INDICATOR v0.3.3
+# Copyleft: quantum-phy (Néstor), 29/12/2019
 #=========================================================================
 
 #This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Notify as notify
 
-__VERSION__ = '0.3.2'
+__VERSION__ = '0.3.3'
 
 APPINDICATOR_ID = 'MONITOR PRIME - APP INDICATOR'
 archivo_prime_select = '/usr/bin/prime-select' #<=============== Para Nvidia Prime
@@ -84,7 +84,7 @@ def build_menu(driver):
         menu.append(menu_prime_select)
         menu_prime_select.set_submenu(submenu)
         
-        item_igpu = gtk.MenuItem('Intel (Modo Ahorro de energía)')
+        item_igpu = gtk.MenuItem('')
         item_igpu.set_sensitive(False)
         submenu.append(item_igpu)
         #->>>>>>>>>>>
@@ -99,10 +99,13 @@ def build_menu(driver):
             
             item_state = gtk.MenuItem('Estado de GPU')
             item_state.connect('activate', Notificacion_estado_Nvidia_Prime)
+            if (capacidad_on_demand == 'yes'):
+                if (output_nvidia_select=='on-demand\n'):
+                    item_state.set_sensitive(False)
             menu.append(item_state)
             
             item_apps_dGPU = gtk.MenuItem('Aplicaciones en dGPU')
-            #item_apps_dGPU.connect('activate', notificacion_apps_dGPU_Nvidia_Prime)
+            item_apps_dGPU.connect('activate', notificacion_apps_dGPU_Nvidia_optimus)
             if (capacidad_on_demand == 'no' or output_nvidia_select=='intel\n' or output_nvidia_select=='nvidia\n' or output_nvidia_select=='amd\n'):
                 item_apps_dGPU.set_sensitive(False)
             menu.append(item_apps_dGPU)
@@ -314,8 +317,8 @@ def notificacion_apps_dGPU(_):
     mostrar_PRIME_dGPU(output2,PID_and_name)
     return
 
-def buscar_PRIME_archivo(archivo_info_gpus):
-    archivo = open(archivo_info_gpus,'r')
+def buscar_PRIME_archivo(archivo_PID):
+    archivo = open(archivo_PID,'r')
     linea = archivo.readlines()
     n = len(linea)
     archivo.close()
@@ -357,11 +360,66 @@ def mostrar_PRIME_dGPU(output2,PID_and_name):
     else:
         notify.Notification.new('Aplicaciones renderizadas en el dGPU:', 'Ninguna\n', os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
     return
+###------------->>>>>>>>>
+def notificacion_apps_dGPU_Nvidia_optimus(_): #<=============== Para Nvidia Prime
+    comando1 = "ps -eo pid"
+    comando_del = "rm "
+    comando_del += archivo_PID
+    
+    if (os.path.exists(archivo_PID)):
+        process = subprocess.Popen(comando_del, stdout=subprocess.PIPE, stderr=None, shell=True)
+        escribir_info_archivo(comando1,archivo_PID)
+    else:
+        escribir_info_archivo(comando1,archivo_PID)
+    
+    [output2, PID_and_name] = buscar_Nvidia_optimus_archivo(archivo_PID)
+    mostrar_Nvidia_optimus_dGPU(output2,PID_and_name)
+    return
 
-#def notificacion_apps_dGPU_Nvidia_Prime(_): #<=============== Para Nvidia Prime
-#    print('\n--------->Apps en dGPU Nvidia - ESTADO: PENDIENTE<---------')
-#    print('\n--------->Se continuara cuando se pula el codigo.<---------')
-#    return
+def buscar_Nvidia_optimus_archivo(archivo_PID):
+    archivo = open(archivo_PID,'r')
+    linea = archivo.readlines()
+    n = len(linea)
+    archivo.close()
+    
+    i = 122
+    output2 = -1
+    PID_and_name=""
+    while i<n:
+        PID1 = int(linea[i])
+        comando2 = "sudo grep -i __NV_PRIME_RENDER_OFFLOAD=1 /proc/"
+        comando2 += str(PID1)
+        comando2 += "/environ"
+        
+        if (os.path.exists("/proc/"+str(PID1)+"/environ")):
+            process = subprocess.Popen(comando2, stdout=subprocess.PIPE, stderr=None, shell=True)
+            linea_salida = str(process.communicate())
+            output1 = linea_salida.find("/proc/"+str(PID1)+"/environ")
+            
+            if (output1>=0):
+                output2 = output1
+                PID2 = PID1
+                
+                comando3 = "ps -p "
+                comando3 += str(PID2)
+                comando3 += " -o comm="
+                
+                process = subprocess.Popen(comando3, stdout=subprocess.PIPE, stderr=None, shell=True)
+                process_name = process.communicate()[0]
+                PID_and_name = PID_and_name+str(PID2)+" - "+process_name
+            else:
+                if (output2<=0):
+                    output2 = output1
+        i = i + 1
+    return output2, PID_and_name
+
+def mostrar_Nvidia_optimus_dGPU(output2,PID_and_name):
+    if(output2>=0):
+        notify.Notification.new('Aplicaciones renderizadas en el dGPU:', "|PID - NOMBRE DEL PROCESO|\n"+PID_and_name, os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[3])).show()
+    else:
+        notify.Notification.new('Aplicaciones renderizadas en el dGPU:', 'Ninguna\n', os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[3])).show()
+    return
+###------------->>>>>>>>>
 
 def buscar_estado():
     command  = 'sudo cat '
@@ -402,12 +460,14 @@ def Notificacion_estado_Nvidia_Prime(_): #<=============== Para Nvidia Prime
 def notificacion_estado(_):
     output = buscar_estado()
     
+    comando0 = 'glxinfo | grep "OpenGL renderer string"'
     comando1 = 'glxinfo | grep "Vendor"'
     comando2 = 'glxinfo | grep "Device"'
     comando3 = 'lspci -v -s 00:02.0 | grep "Subsystem"'
-    comando4 = 'DRI_PRIME=1 glxinfo | grep "Vendor"'
-    comando5 = 'DRI_PRIME=1 glxinfo | grep "Device"'
-    comando6 = 'lspci -v -s 01:00.0 | grep "Subsystem"'
+    comando4 = 'DRI_PRIME=1 glxinfo | grep "OpenGL renderer string"'
+    comando5 = 'DRI_PRIME=1 glxinfo | grep "Vendor"'
+    comando6 = 'DRI_PRIME=1 glxinfo | grep "Device"'
+    comando7 = 'lspci -v -s 01:00.0 | grep "Subsystem"'
     
     if (os.path.exists(archivo_info_gpus)):
         if(output[0]>=0):
@@ -417,6 +477,7 @@ def notificacion_estado(_):
                 notify.Notification.new('GPU renderizador [Mesa]: dGPU', mostrar_info_GPU(archivo_info_gpus)[1], os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
     
     else:
+        escribir_info_archivo(comando0,archivo_info_gpus)
         escribir_info_archivo(comando1,archivo_info_gpus)
         escribir_info_archivo(comando2,archivo_info_gpus)
         escribir_info_archivo(comando3,archivo_info_gpus)
@@ -424,6 +485,7 @@ def notificacion_estado(_):
         escribir_info_archivo(comando4,archivo_info_gpus)
         escribir_info_archivo(comando5,archivo_info_gpus)
         escribir_info_archivo(comando6,archivo_info_gpus)
+        escribir_info_archivo(comando7,archivo_info_gpus)
         mostrar_info_GPU(archivo_info_gpus)
         
         if(output[0]>=0):
@@ -433,7 +495,7 @@ def notificacion_estado(_):
                 notify.Notification.new('GPU renderizador [Mesa]: dGPU', mostrar_info_GPU(archivo_info_gpus)[1], os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
         
 def mostrar_info_GPU(archivo_info_gpus):
-    output0 = buscar_info_archivo(0,archivo_info_gpus)
+    output0 = buscar_info_archivo(1,archivo_info_gpus)
     if(output0[0]>=0):
         texto0 = output0[5]
         logo0 = IMG_intel_logo
@@ -442,7 +504,7 @@ def mostrar_info_GPU(archivo_info_gpus):
             texto0 = output0[5]
             logo0 = IMG_amd_radeon_logo
     
-    output1 = buscar_info_archivo(4,archivo_info_gpus)
+    output1 = buscar_info_archivo(6,archivo_info_gpus)
     if(output1[1]>=0 or output1[2]>=0):
         texto1 = output0[6]
         logo1 = IMG_amd_radeon_logo
@@ -486,10 +548,10 @@ def buscar_info_archivo(i,archivo_info_gpus):
     linea = archivo.readlines()
     archivo.close()
     
-    nombre_gpu0 = linea[2]
-    nombre_gpu1 = linea[6]
+    nombre_gpu0 = linea[0]
+    nombre_gpu1 = linea[8]
     
-    nombre_gpu0 = nombre_gpu0[12:]
+    nombre_gpu0 = nombre_gpu0[29:]
     nombre_gpu1 = nombre_gpu1[12:]
     
     output1 = linea[i].find("8086") #Intel
