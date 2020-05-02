@@ -586,7 +586,7 @@ def acerca(_):
     mensaje += "\n[Para Drivers Open-Source (Mesa) y/o Privativos (Nvidia-Prime)]"
     copyright = "2018-2019 - quantum-phy (Néstor)"
     licencia = "Licencia Pública General de GNU, versión 3"
-    website = "https://github.com/quantum-phy/Monitor-PRIME_APP-Indicator"
+    website = "https://github.com/nestor-ld93/Monitor-PRIME_APP-Indicator"
     website_label = "Sitio web GitHub"
     
     about = gtk.AboutDialog()

@@ -33,7 +33,7 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 ## ¿CÓMO DESCARGAR?
 - Para obtener la última versión estable, descargue desde la pestaña "releases".
 - Para obtener la última versión candidata a estable, descargue desde el botón "Clone or download" o ejecute en un terminal:
-`git clone https://github.com/quantum-phy/Monitor-PRIME_APP-Indicator`
+`git clone https://github.com/nestor-ld93/Monitor-PRIME_APP-Indicator`
 
 ## ¿CÓMO EJECUTAR?
 1. Establecer permisos de ejecución: `chmod +x monitor-prime_app-indicator.py`
