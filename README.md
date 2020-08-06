@@ -1,6 +1,6 @@
 # MONITOR PRIME APP INDICATOR
-Este es un APP indicator para usuarios de computadoras portátiles equipados con GPUs híbridos (Intel+AMD, AMD+AMD, Intel+Nvidia). **Su función principal es mostrar el GPU renderizador** cuando se le indique.
-Está programado en Python, fue probado en Kubuntu 18.04 LTS y KDE Neon 5.16, pero nada impide su aplicación para otros entornos y versiones superiores a Ubuntu 14.04 LTS.
+APP indicator para usuarios de computadoras portátiles equipados con GPUs híbridos (Intel+AMD, AMD+AMD, Intel+Nvidia). **Su función principal es mostrar el GPU renderizador** cuando se le indique.
+Está programado en Python, fue probado en Kubuntu 18.04/20.04 LTS, Linux Mint 20 y KDE Neon, pero nada impide su aplicación para otros entornos y versiones superiores.
 
 Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 
@@ -10,7 +10,7 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 - Permite la selección del iGPU Intel o dGPU NVIDIA (Driver privativo Nvidia Prime)
 - Permite la selección de NVIDIA Optimus (On-Demand) si está disponible (Driver privativo Nvidia Prime 435.17 o superior y una versión de X.Org X server compatible)
 
-## IMÁGENES PRINCIPALES (en KDE Neon 5.17)
+## IMÁGENES PRINCIPALES (en KDE Plasma 5.17)
 
 ![app menu](https://lh3.googleusercontent.com/-tAxNuxCPQvQ/XgkeayBPnTI/AAAAAAAAA5k/Pl5qB52-IycZwZDirIT_yMSNLcpESnv-QCLcBGAsYHQ/h195/Menu_mesa-prime_nvidia_prime.png "Menú principal y sus opciones para PRIME y Nvidia Prime")
 
@@ -22,22 +22,24 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 
 ## DEPENDENCIAS
 - gir1.2-appindicator3-0.1 (sudo apt install gir1.2-appindicator3-0.1)
+- python-dbus (sudo apt install python-dbus)
+- python-gi (sudo apt install python-gi)
 - mesa-utils (sudo apt install mesa-utils)
 - kate (sudo apt install kate)
 
 ## REQUISITOS MÍNIMOS
-- Linux Ubuntu 14.04 (Kernel 3.13) 64-bit [Se recomienda Kubuntu 18.04 o superior]
+- Linux Ubuntu 14.04 (Kernel 3.13) 64-bit [Se recomienda una distribución con KDE Plasma 5.17 o superior]
 - Drivers Open-Source (Mesa) para GPUs Intel, AMD & Nvidia
 - Driver Privativos (Nvidia-Prime) para GPUs Nvidia
 
 ## ¿CÓMO DESCARGAR?
-- Para obtener la última versión estable, descargue desde la pestaña "releases".
-- Para obtener la última versión candidata a estable, descargue desde el botón "Clone or download" o ejecute en un terminal:
+- Para obtener la última versión estable, descargue desde la pestaña [[Releases](https://github.com/nestor-ld93/Monitor-PRIME_APP-Indicator/releases)].
+- Para obtener la última versión candidata a estable, descargue desde el botón [Code] o ejecute en un terminal:
 `git clone https://github.com/nestor-ld93/Monitor-PRIME_APP-Indicator`
 
 ## ¿CÓMO EJECUTAR?
 1. Establecer permisos de ejecución: `chmod +x monitor-prime_app-indicator.py`
-1. Ejecutar en un terminal: `./monitor-prime_app-indicator.py`
+1. Ejecutar en un terminal (no ingresar como superusuario): `./monitor-prime_app-indicator.py`
 1. Ingresar la contraseña del sistema (en el terminal o en una ventana) cuando se solicite.
 
 ## LISTA DE CAMBIOS
@@ -63,6 +65,7 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 - (v0.3.2) [26/12/2019] Cambios menores en la ventana "Acerca".
 - (v0.3.3) [29/12/2019] Se añadió la característica "Aplicaciones en dGPU" para Nvidia Prime On-Demand (Nvidia Optimus).
 - (v0.3.3) [29/12/2019] Correcciones menores.
+- (v0.3.4) [06/08/2020] Correcciones en la detección de IDs de GPUs.
 
 ## ENLACES DE INTERÉS
 - Se muestra un ejemplo de su uso en [NotebookGPU](https://notebookgpu.blogspot.com/2018/10/verificar-el-estado-y-configurar.html)

@@ -1,9 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-#=========================================================================
-# MONITOR PRIME - APP INDICATOR v0.3.3
-# Copyleft: quantum-phy (Néstor), 29/12/2019
-#=========================================================================
+#==================================================================================
+#   +==========================================================================+  #
+#   |                    MONITOR PRIME - APP INDICATOR v0.3.4                  |  #
+#   +==========================================================================+  #
+#   | -Ultima actualizacion: 06/08/2020                                        |  #
+#   +--------------------------------------------------------------------------+  #
+#   | -Copyright (C) 2020 quantum-phy (Néstor)                                 |  #
+#   +--------------------------------------------------------------------------+  #
+#==================================================================================
 
 #This program is free software: you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
@@ -21,6 +26,8 @@
 #=========================================================================
 # DEPENDENCIAS:
 # - gir1.2-appindicator3-0.1 (sudo apt install gir1.2-appindicator3-0.1)
+# - python-dbus (sudo apt install python-dbus)
+# - python-gi (sudo apt install python-gi)
 # - mesa-utils (sudo apt install mesa-utils)
 # - kate (sudo apt install kate)
 #=========================================================================
@@ -39,7 +46,7 @@ from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Notify as notify
 
-__VERSION__ = '0.3.3'
+__VERSION__ = '0.3.4'
 
 APPINDICATOR_ID = 'MONITOR PRIME - APP INDICATOR'
 archivo_prime_select = '/usr/bin/prime-select' #<=============== Para Nvidia Prime
@@ -57,10 +64,10 @@ editor_texto = "kate"
 def main():
     indicator = appindicator.Indicator.new(APPINDICATOR_ID, os.path.abspath(IMG_video_card), appindicator.IndicatorCategory.SYSTEM_SERVICES)
     indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
-    #if (os.path.exists(archivo_mesa_prime)): #<=============== Para PRIME (Mesa)
+    #if (os.path.exists(archivo_mesa_prime)==True): #<=============== Para PRIME (Mesa)
     driver = 'mesa_prime'
     #else:
-    if (os.path.exists(archivo_prime_select)): #<=============== Para Nvidia Prime
+    if (os.path.exists(archivo_prime_select)==True): #<=============== Para Nvidia Prime
         driver = 'nvidia_prime'
     indicator.set_menu(build_menu(driver))
     notify.init(APPINDICATOR_ID)
@@ -239,7 +246,7 @@ def info_full_GPU(_):
     cabecero1 = "echo 'INFO. iGPU'"
     cabecero2 = "echo 'INFO. dGPU'"
     
-    if (os.path.exists(archivo_info_gpus_full)):
+    if (os.path.exists(archivo_info_gpus_full)==True):
         process = subprocess.Popen(comando_del, stdout=subprocess.PIPE, stderr=None, shell=True)
         
         escribir_info_archivo(separador,archivo_info_gpus_full)
@@ -282,7 +289,7 @@ def info_full_GPU_Nvidia_Prime(_): #<=============== Para Nvidia Prime
         if(output_nvidia_select=='nvidia\n'):
             cabecero = "echo 'INFO. dGPU'"
     
-    if (os.path.exists(archivo_info_gpus_full)):
+    if (os.path.exists(archivo_info_gpus_full)==True):
         process = subprocess.Popen(comando_del, stdout=subprocess.PIPE, stderr=None, shell=True)
         
         escribir_info_archivo(separador,archivo_info_gpus_full)
@@ -307,7 +314,7 @@ def notificacion_apps_dGPU(_):
     comando_del = "rm "
     comando_del += archivo_PID
     
-    if (os.path.exists(archivo_PID)):
+    if (os.path.exists(archivo_PID)==True):
         process = subprocess.Popen(comando_del, stdout=subprocess.PIPE, stderr=None, shell=True)
         escribir_info_archivo(comando1,archivo_PID)
     else:
@@ -332,7 +339,7 @@ def buscar_PRIME_archivo(archivo_PID):
         comando2 += str(PID1)
         comando2 += "/environ"
         
-        if (os.path.exists("/proc/"+str(PID1)+"/environ")):
+        if (os.path.exists("/proc/"+str(PID1)+"/environ")==True):
             process = subprocess.Popen(comando2, stdout=subprocess.PIPE, stderr=None, shell=True)
             linea_salida = str(process.communicate())
             output1 = linea_salida.find("/proc/"+str(PID1)+"/environ")
@@ -366,7 +373,7 @@ def notificacion_apps_dGPU_Nvidia_optimus(_): #<=============== Para Nvidia Prim
     comando_del = "rm "
     comando_del += archivo_PID
     
-    if (os.path.exists(archivo_PID)):
+    if (os.path.exists(archivo_PID)==True):
         process = subprocess.Popen(comando_del, stdout=subprocess.PIPE, stderr=None, shell=True)
         escribir_info_archivo(comando1,archivo_PID)
     else:
@@ -391,7 +398,7 @@ def buscar_Nvidia_optimus_archivo(archivo_PID):
         comando2 += str(PID1)
         comando2 += "/environ"
         
-        if (os.path.exists("/proc/"+str(PID1)+"/environ")):
+        if (os.path.exists("/proc/"+str(PID1)+"/environ")==True):
             process = subprocess.Popen(comando2, stdout=subprocess.PIPE, stderr=None, shell=True)
             linea_salida = str(process.communicate())
             output1 = linea_salida.find("/proc/"+str(PID1)+"/environ")
@@ -429,7 +436,24 @@ def buscar_estado():
     
     output1 = output[0].find("DynOff")
     output2 = output[0].find("DynPwr")
-    return output1, output2
+    
+    linea = output[0].split("\n")
+    if (linea[0].find("DIS")>=0):
+        id_dgpu = linea[0][20:]
+    else:
+        if (linea[0].find("IGD")>=0):
+            id_igpu = linea[0][17:]
+    
+    if (linea[1].find("DIS")>=0):
+        id_dgpu = linea[1][20:]
+    else:
+        if (linea[1].find("IGD"))>=0:
+            id_igpu = linea[1][17:]
+    
+    id_igpu = id_igpu.replace("\n","")
+    id_dgpu = id_dgpu.replace("\n","")
+    
+    return output1, output2, id_igpu, id_dgpu
 
 def Estado_Nvidia_Prime_Select(): #<=============== Para Nvidia Prime
     command = 'prime-select query'
@@ -442,7 +466,7 @@ def Notificacion_estado_Nvidia_Prime(_): #<=============== Para Nvidia Prime
     
     comando1 = 'lspci -k | grep -A 2 -i "VGA"'
     
-    if (os.path.exists(archivo_info_gpus)):
+    if (os.path.exists(archivo_info_gpus)==True):
         if(output_nvidia_select=='intel\n' or output_nvidia_select=='amd\n'):
             notify.Notification.new('GPU renderizador [Mesa]: iGPU', mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[0], os.path.abspath(mostrar_info_GPU_Nvidia_Prime(archivo_info_gpus)[2])).show()
         else:
@@ -459,17 +483,19 @@ def Notificacion_estado_Nvidia_Prime(_): #<=============== Para Nvidia Prime
     
 def notificacion_estado(_):
     output = buscar_estado()
+    id_igpu = output[2]
+    id_dgpu = output[3]
     
     comando0 = 'glxinfo | grep "OpenGL renderer string"'
     comando1 = 'glxinfo | grep "Vendor"'
     comando2 = 'glxinfo | grep "Device"'
-    comando3 = 'lspci -v -s 00:02.0 | grep "Subsystem"'
+    comando3 = 'lspci -v -s '+id_igpu+' | grep "Subsystem"'
     comando4 = 'DRI_PRIME=1 glxinfo | grep "OpenGL renderer string"'
     comando5 = 'DRI_PRIME=1 glxinfo | grep "Vendor"'
     comando6 = 'DRI_PRIME=1 glxinfo | grep "Device"'
-    comando7 = 'lspci -v -s 01:00.0 | grep "Subsystem"'
+    comando7 = 'lspci -v -s '+id_dgpu+' | grep "Subsystem"'
     
-    if (os.path.exists(archivo_info_gpus)):
+    if (os.path.exists(archivo_info_gpus)==True):
         if(output[0]>=0):
             notify.Notification.new('GPU renderizador [Mesa]: iGPU', mostrar_info_GPU(archivo_info_gpus)[0], os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[2])).show()
         else:
@@ -584,7 +610,7 @@ def acerca(_):
     mensaje  = "App indicator que muestra el GPU renderizador, PID-Proceso en dGPU, información de GPUs "
     mensaje += "y selección de GPUs (Nvidia Prime) en portátiles con gráficos híbridos. "
     mensaje += "\n[Para Drivers Open-Source (Mesa) y/o Privativos (Nvidia-Prime)]"
-    copyright = "2018-2019 - quantum-phy (Néstor)"
+    copyright = "2018-2020 - quantum-phy (Néstor)"
     licencia = "Licencia Pública General de GNU, versión 3"
     website = "https://github.com/nestor-ld93/Monitor-PRIME_APP-Indicator"
     website_label = "Sitio web GitHub"
