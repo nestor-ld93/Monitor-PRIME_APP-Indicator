@@ -6,11 +6,11 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 
 - Muestra el "Estado de GPU" (GPU renderizador)
 - Muestra las "Aplicaciones en dGPU" (PID y Nombre del proceso)
-- Muestra la "Información de GPUs" (Vendor, Device, VRAM, etc.)
+- Muestra la "Información de GPUs" (VRAM, driver (en uso y compatibles), versión (OpenGL y drivers), etc.)
 - Permite la selección del iGPU Intel o dGPU NVIDIA (Driver privativo Nvidia Prime)
-- Permite la selección de NVIDIA Optimus (On-Demand) si está disponible (Driver privativo Nvidia Prime 435.17 o superior y una versión de X.Org X server compatible)
+- Permite la selección de NVIDIA Optimus (On-Demand) si se encuentra disponible (Driver privativo Nvidia Prime 435.17 o superior y una versión de X.Org X server compatible)
 
-## IMÁGENES PRINCIPALES (en KDE Plasma 5.17)
+## IMÁGENES PRINCIPALES (en KDE Plasma)
 
 ![app menu](https://lh3.googleusercontent.com/-tAxNuxCPQvQ/XgkeayBPnTI/AAAAAAAAA5k/Pl5qB52-IycZwZDirIT_yMSNLcpESnv-QCLcBGAsYHQ/h195/Menu_mesa-prime_nvidia_prime.png "Menú principal y sus opciones para PRIME y Nvidia Prime")
 
@@ -20,12 +20,13 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 
 ![app menu](https://lh3.googleusercontent.com/-ARgkCEQ5XUc/XgkearIyYJI/AAAAAAAAA5g/DJR4rURDRxQ9CB0yHdD2PA-j5FPbig5TwCLcBGAsYHQ/h159/Estado_Intel_Nvidia_Nvidia-Prime.png "Estado de GPU con drivers Privativos: Nvidia Prime")
 
+![app menu](https://lh3.googleusercontent.com/-Y1huKeDsSLA/X6h74-WH_JI/AAAAAAAABXs/2xziSyzOheYJmLbO5LKFVAg_w0R74Dx6wCLcBGAsYHQ/h412/Info_gpus.png "Información de GPUs: Nvidia Prime")
+
 ## DEPENDENCIAS
 - gir1.2-appindicator3-0.1 (sudo apt install gir1.2-appindicator3-0.1)
 - python-dbus (sudo apt install python-dbus)
 - python-gi (sudo apt install python-gi)
 - mesa-utils (sudo apt install mesa-utils)
-- kate (sudo apt install kate)
 
 ## REQUISITOS MÍNIMOS
 - Linux Ubuntu 14.04 (Kernel 3.13) 64-bit [Se recomienda una distribución con KDE Plasma 5.17 o superior]
@@ -38,34 +39,10 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 `git clone https://github.com/nestor-ld93/Monitor-PRIME_APP-Indicator`
 
 ## ¿CÓMO EJECUTAR?
+1. Ingresar a la carpeta clonada: `cd Monitor-PRIME_APP-Indicator`
 1. Establecer permisos de ejecución: `chmod +x monitor-prime_app-indicator.py`
-1. Ejecutar en un terminal (no ingresar como superusuario): `./monitor-prime_app-indicator.py`
+1. Ejecutar (no ingresar como superusuario): `./monitor-prime_app-indicator.py`
 1. Ingresar la contraseña del sistema (en el terminal o en una ventana) cuando se solicite.
-
-## LISTA DE CAMBIOS
-- (v0.2.3) [21/09/2018] Lanzamiento inicial.
-- (v0.2.6) [06/07/2019] Se cambió el nombre del menú "Estado" a "Estado de GPU".
-- (v0.2.6) [06/07/2019] Se añadió el menú "Aplicaciones en dGPU". Ahora se obtiene una notificación con el PID y el nombre del proceso en el dGPU.
-- (v0.2.6) [06/07/2019] Se añadió el menú "Informacion de GPUs". Ahora se obtiene un archivo de texto con la información de ambos GPUs, el archivo se abre automáticamente con kate.
-- (v0.2.6) [06/07/2019] Se creó la carpeta "imgs" para almacenar las imágenes utilizadas.
-- (v0.2.6) [06/07/2019] Se creó la carpeta "txts" para almacenar los archivos de salida.
-- (v0.2.6) [06/07/2019] Se realizaron muchas optimizaciones al código.
-- (v0.2.8) [24/12/2019] Se añadió soporte para Nvidia Prime.
-- (v0.2.8) [24/12/2019] El menú "Aplicaciones en dGPU" es reemplazado por "NVIDIA SMI" para Nvidia Prime.
-- (v0.2.8) [24/12/2019] Se realizaron muchas optimizaciones al código.
-- (v0.3.1) [25/12/2019] El menú "Aplicaciones en dGPU" se encuentra de regreso pero desactivado para Nvidia Prime.
-- (v0.3.1) [25/12/2019] Se agregaron las 03 opciones disponibles de prime-select dentro del menú "Nvidia Prime".
-- (v0.3.1) [25/12/2019] Al seleccionar Intel, NVIDIA o NVIDIA Optimus; aparecerá una ventana solicitando permisos de superusuario.
-- (v0.3.1) [25/12/2019] La opción "NVIDIA Optimus (Demandado)" se encontrará habilitada únicamente en los equipos que lo soporten. Revisar: [Chapter 35. PRIME Render Offload](https://download.nvidia.com/XFree86/Linux-x86_64/435.21/README/primerenderoffload.html).
-- (v0.3.1) [25/12/2019] Se anadió el menú "Acerca".
-- (v0.3.1) [25/12/2019] Se realizaron muchas optimizaciones al código.
-- (v0.3.2) [26/12/2019] Se añadió codificación UTF-8.
-- (v0.3.2) [26/12/2019] El menú "NVIDIA Prime" se muestra con los drivers Mesa pero el primero se encuentra desactivado.
-- (v0.3.2) [26/12/2019] Se corrigió un bug que no permitía la visualización de las aplicaciones en el dGPU (PRIME) si la instalación de GNU/Linux se encontraba en un idioma distinto al español.
-- (v0.3.2) [26/12/2019] Cambios menores en la ventana "Acerca".
-- (v0.3.3) [29/12/2019] Se añadió la característica "Aplicaciones en dGPU" para Nvidia Prime On-Demand (Nvidia Optimus).
-- (v0.3.3) [29/12/2019] Correcciones menores.
-- (v0.3.4) [06/08/2020] Correcciones en la detección de IDs de GPUs.
 
 ## ENLACES DE INTERÉS
 - Se muestra un ejemplo de su uso en [NotebookGPU](https://notebookgpu.blogspot.com/2018/10/verificar-el-estado-y-configurar.html)

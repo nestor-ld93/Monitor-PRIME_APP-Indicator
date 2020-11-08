@@ -1,0 +1,32 @@
+## LISTA DE CAMBIOS
+- (v0.2.3) [21/09/2018] Lanzamiento inicial.
+- (v0.2.6) [06/07/2019] Se cambió el nombre del menú "Estado" a "Estado de GPU".
+- (v0.2.6) [06/07/2019] Se añadió el menú "Aplicaciones en dGPU". Ahora se obtiene una notificación con el PID y el nombre del proceso en el dGPU.
+- (v0.2.6) [06/07/2019] Se añadió el menú "Informacion de GPUs". Ahora se obtiene un archivo de texto con la información de ambos GPUs, el archivo se abre automáticamente con kate.
+- (v0.2.6) [06/07/2019] Se creó la carpeta "imgs" para almacenar las imágenes utilizadas.
+- (v0.2.6) [06/07/2019] Se creó la carpeta "txts" para almacenar los archivos de salida.
+- (v0.2.6) [06/07/2019] Se realizaron muchas optimizaciones al código.
+- (v0.2.8) [24/12/2019] Se añadió soporte para Nvidia Prime.
+- (v0.2.8) [24/12/2019] El menú "Aplicaciones en dGPU" es reemplazado por "NVIDIA SMI" para Nvidia Prime.
+- (v0.2.8) [24/12/2019] Se realizaron muchas optimizaciones al código.
+- (v0.3.1) [25/12/2019] El menú "Aplicaciones en dGPU" se encuentra de regreso pero desactivado para Nvidia Prime.
+- (v0.3.1) [25/12/2019] Se agregaron las 03 opciones disponibles de prime-select dentro del menú "Nvidia Prime".
+- (v0.3.1) [25/12/2019] Al seleccionar Intel, NVIDIA o NVIDIA Optimus; aparecerá una ventana solicitando permisos de superusuario.
+- (v0.3.1) [25/12/2019] La opción "NVIDIA Optimus (Demandado)" se encontrará habilitada únicamente en los equipos que lo soporten. Revisar: [Chapter 35. PRIME Render Offload](https://download.nvidia.com/XFree86/Linux-x86_64/435.21/README/primerenderoffload.html).
+- (v0.3.1) [25/12/2019] Se anadió el menú "Acerca".
+- (v0.3.1) [25/12/2019] Se realizaron muchas optimizaciones al código.
+- (v0.3.2) [26/12/2019] Se añadió codificación UTF-8.
+- (v0.3.2) [26/12/2019] El menú "NVIDIA Prime" se muestra con los drivers Mesa pero el primero se encuentra desactivado.
+- (v0.3.2) [26/12/2019] Se corrigió un bug que no permitía la visualización de las aplicaciones en el dGPU (PRIME) si la instalación de GNU/Linux se encontraba en un idioma distinto al español.
+- (v0.3.2) [26/12/2019] Cambios menores en la ventana "Acerca".
+- (v0.3.3) [29/12/2019] Se añadió la característica "Aplicaciones en dGPU" para Nvidia Prime On-Demand (Nvidia Optimus).
+- (v0.3.3) [29/12/2019] Correcciones menores.
+- (v0.3.4) [06/08/2020] Correcciones en la detección de IDs de GPUs.
+- (v0.4.0b) [08/11/2020] Cambios grandes en el código para mejorar la eficiencia.
+- (v0.4.0b) [08/11/2020] Ya no es necesario usar kate ni otro editor de texto.
+- (v0.4.0b) [08/11/2020] Se cambió la asociación del menú "Información de GPUs". Ahora se visualiza una ventana con la información de interés (VRAM, driver (en uso y compatibles), versión (OpenGL y drivers), etc.).
+- (v0.4.0b) [08/11/2020] En portátiles con Nvidia Prime, al tener seleccionado el GPU Intel o Nvidia, se mostrarán variables nombradas como 'NaN' en la ventana "Información de GPUs" porque de momento no es posible acceder a dicha información.
+- (v0.4.0b) [08/11/2020] En portátiles con Nvidia Prime, al tener seleccionado On-Demand, se mostrará en "Estado de GPU" el conjunto iGPU + dGPU como GPU renderizador (porque el dGPU Nvidia no se encuentra apagado).
+- (v0.4.0b) [08/11/2020] Muchos nombres de GPUs deberían mostrase correctamente.
+- (v0.4.0b) [08/11/2020] Se añadieron las variables globales 'name_intel_select', 'name_radeon_select', 'name_nvidia_select' y 'name_demandado_select' para cambiar su valor (texto) al ser utilizadas en 'prime-select' (por si alguna vez Nvidia cambia los nombres).
+- (v0.4.0b) [08/11/2020] Al iniciar el App Indicator, se eliminarán los archivos de salida previamente generados (muy útil en portátiles con Nvidia Prime).
