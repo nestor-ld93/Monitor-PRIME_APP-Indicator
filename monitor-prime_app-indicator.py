@@ -661,7 +661,7 @@ def extraccion_info_gui(driver):
 
 def buscar_ids():
     if (os.path.exists(archivo_param_gpus)==False):
-        comando = 'lspci -v | grep "VGA"'
+        comando = 'lspci -v | grep "VGA compatible controller"'
         process  = subprocess.Popen(comando, stdout=subprocess.PIPE, stderr=None, shell=True)
         salida_comando = process.communicate()[0]
         linea_salida = salida_comando.split("\n")
