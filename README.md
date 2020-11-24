@@ -1,6 +1,6 @@
 # MONITOR PRIME APP INDICATOR
 APP indicator para usuarios de computadoras portátiles equipados con GPUs híbridos (Intel+AMD, AMD+AMD, Intel+Nvidia). **Su función principal es mostrar el GPU renderizador** cuando se le indique.
-Está programado en Python, fue probado en Kubuntu 18.04/20.04 LTS, Linux Mint 20 y KDE Neon, pero nada impide su aplicación para otros entornos y versiones superiores.
+Está programado en Python, fue probado en Kubuntu 18.04/20.04 LTS, Linux Mint 20, KDE Neon 18.04/20.04 y MX Linux 19.3, pero nada impide su aplicación para otros entornos y versiones superiores.
 
 Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 
@@ -24,6 +24,8 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 
 ## DEPENDENCIAS
 - gir1.2-appindicator3-0.1 (sudo apt install gir1.2-appindicator3-0.1)
+- gir1.2-gtk-3.0 (sudo apt install gir1.2-gtk-3.0)
+- gir1.2-notify-0.7 (sudo apt install gir1.2-notify-0.7)
 - python-dbus (sudo apt install python-dbus)
 - python-gi (sudo apt install python-gi)
 - mesa-utils (sudo apt install mesa-utils)
