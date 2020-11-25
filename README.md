@@ -12,7 +12,7 @@ Las funciones que realiza **MONITOR PRIME APP INDICATOR** son las siguientes:
 
 ## IMÁGENES PRINCIPALES (en KDE Plasma)
 
-![app menu](https://lh3.googleusercontent.com/-tAxNuxCPQvQ/XgkeayBPnTI/AAAAAAAAA5k/Pl5qB52-IycZwZDirIT_yMSNLcpESnv-QCLcBGAsYHQ/h195/Menu_mesa-prime_nvidia_prime.png "Menú principal y sus opciones para PRIME y Nvidia Prime")
+![app menu](https://lh3.googleusercontent.com/-34K7l-gINr0/X77Wg3Ie-BI/AAAAAAAABak/nEIMtBlNSg8U0w4Kw8lF--uskhMA2iUuwCLcBGAsYHQ/h195/Menu_mesa-prime_nvidia_prime_02.png "Menú principal y sus opciones para PRIME y Nvidia Prime")
 
 ![app menu](https://lh3.googleusercontent.com/-Zh8pSgTydfs/XgkeZkQVv0I/AAAAAAAAA5Q/1hBx26ZX8jUjc6PFKqb8OodVLn8J0_CcwCLcBGAsYHQ/h291/Apps_Nvidia.png "Aplicaciones renderizadas en el dGPU")
 
