@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 #==================================================================================
 #   +==========================================================================+  #
-#   |                    MONITOR PRIME - APP INDICATOR v0.4.0b                 |  #
+#   |                    MONITOR PRIME - APP INDICATOR v0.4.2b                 |  #
 #   +==========================================================================+  #
-#   | -Ultima actualizacion: 08/11/2020                                        |  #
+#   | -Ultima actualizacion: 25/11/2020                                        |  #
 #   +--------------------------------------------------------------------------+  #
 #   | -Copyright (C) 2020 quantum-phy (Néstor)                                 |  #
 #   +--------------------------------------------------------------------------+  #
@@ -44,17 +44,30 @@ import subprocess
 from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Notify as notify
+from gi.repository import GdkPixbuf
 
-__VERSION__ = '0.4.0b'
+__VERSION__ = '0.4.2b'
 
 APPINDICATOR_ID = 'MONITOR PRIME - APP INDICATOR'
 archivo_prime_select = '/usr/bin/prime-select' #<=============== Para Nvidia Prime
 archivo_mesa_prime = '/sys/kernel/debug/vgaswitcheroo/switch' #<=============== Para PRIME (Mesa)
 
-IMG_video_card = 'imgs/video-card.svg'
-IMG_intel_logo = 'imgs/Intel-logo.svg'
-IMG_amd_radeon_logo = 'imgs/AMD_Radeon_graphics_logo_2016.svg'
-IMG_nvidia_geforce_logo = 'imgs/Nvidia-Geforce-GTX.svg'
+IMG_video_card = 'imgs/video_card.svg'
+IMG_intel_logo = 'imgs/Notificaciones/Intel_logo.svg'
+IMG_amd_radeon_logo = 'imgs/Notificaciones/AMD_Radeon_graphics_logo_2016.svg'
+IMG_nvidia_geforce_logo = 'imgs/Notificaciones/Nvidia_Geforce_logo.svg'
+
+IMG_menu_acerca = 'imgs/Menus/Menu_acerca.svg'
+IMG_menu_aplicaciones = 'imgs/Menus/Menu_aplicaciones.svg'
+IMG_menu_cerrar = 'imgs/Menus/Menu_cerrar.svg'
+IMG_menu_estado = 'imgs/Menus/Menu_estado.svg'
+IMG_menu_info = 'imgs/Menus/Menu_info.svg'
+IMG_menu_nvidia_prime = 'imgs/Menus/Menu_nvidia-prime.svg'
+IMG_menu_nvidia_settings = 'imgs/Menus/Menu_nvidia-settings.svg'
+IMG_menu_nvidia_smi = 'imgs/Menus/Menu_nvidia-smi.svg'
+IMG_menu_select_intel = 'imgs/Menus/Menu_select-intel.svg'
+IMG_menu_select_nvidia = 'imgs/Menus/Menu_select-nvidia.svg'
+IMG_menu_select_on_demand = 'imgs/Menus/Menu_select-nvidia-on-demand.svg'
 
 archivo_info_gpus = 'txts/info_gpus.txt'
 archivo_param_gpus = 'txts/param_gpus.txt'
@@ -87,18 +100,58 @@ def main():
 
 def build_menu(driver):
     menu = gtk.Menu()
+    
+    IMG_menu_acerca_gtk = gtk.Image()
+    IMG_menu_acerca_gtk.set_from_file(IMG_menu_acerca)
+    
+    IMG_menu_aplicaciones_gtk = gtk.Image()
+    IMG_menu_aplicaciones_gtk.set_from_file(IMG_menu_aplicaciones)
+    
+    IMG_menu_cerrar_gtk = gtk.Image()
+    IMG_menu_cerrar_gtk.set_from_file(IMG_menu_cerrar)
+    
+    IMG_menu_estado_gtk = gtk.Image()
+    IMG_menu_estado_gtk.set_from_file(IMG_menu_estado)
+    
+    IMG_menu_info_gtk = gtk.Image()
+    IMG_menu_info_gtk.set_from_file(IMG_menu_info)
+    
+    IMG_menu_nvidia_prime_gtk = gtk.Image()
+    IMG_menu_nvidia_prime_gtk.set_from_file(IMG_menu_nvidia_prime)
+    
+    IMG_menu_nvidia_settings_gtk = gtk.Image()
+    IMG_menu_nvidia_settings_gtk.set_from_file(IMG_menu_nvidia_settings)
+    
+    IMG_menu_nvidia_smi_gtk = gtk.Image()
+    IMG_menu_nvidia_smi_gtk.set_from_file(IMG_menu_nvidia_smi)
+    
+    IMG_menu_select_intel_gtk = gtk.Image()
+    IMG_menu_select_intel_gtk.set_from_file(IMG_menu_select_intel)
+    
+    IMG_menu_select_nvidia_gtk = gtk.Image()
+    IMG_menu_select_nvidia_gtk.set_from_file(IMG_menu_select_nvidia)
+    
+    IMG_menu_select_on_demand_gtk = gtk.Image()
+    IMG_menu_select_on_demand_gtk.set_from_file(IMG_menu_select_on_demand)
+    
     if (driver == 'mesa_prime'):
-        item_state = gtk.MenuItem('Estado de GPU')
+        #item_state = gtk.MenuItem('Estado de GPU')
+        item_state = gtk.ImageMenuItem('Estado de GPU')
+        item_state.set_image(IMG_menu_estado_gtk)
         item_state.connect('activate', notificacion_estado_PRIME)
         menu.append(item_state)
         
-        item_apps_dGPU = gtk.MenuItem('Aplicaciones en dGPU')
+        #item_apps_dGPU = gtk.MenuItem('Aplicaciones en dGPU')
+        item_apps_dGPU = gtk.ImageMenuItem('Aplicaciones en dGPU')
+        item_apps_dGPU.set_image(IMG_menu_aplicaciones_gtk)
         item_apps_dGPU.connect('activate', mostrar_apps_dGPU_PRIME)
         menu.append(item_apps_dGPU)
         
         #->>>>>>>>>>>
         submenu = gtk.Menu()
-        menu_prime_select = gtk.MenuItem('NVIDIA Prime')
+        #menu_prime_select = gtk.MenuItem('NVIDIA Prime')
+        menu_prime_select = gtk.ImageMenuItem('NVIDIA Prime')
+        menu_prime_select.set_image(IMG_menu_nvidia_prime_gtk)
         menu_prime_select.set_sensitive(False)
         menu.append(menu_prime_select)
         menu_prime_select.set_submenu(submenu)
@@ -108,7 +161,9 @@ def build_menu(driver):
         submenu.append(item_igpu)
         #->>>>>>>>>>>
         
-        item_info_full_GPU = gtk.MenuItem('Información de GPUs')
+        #item_info_full_GPU = gtk.MenuItem('Información de GPUs')
+        item_info_full_GPU = gtk.ImageMenuItem('Información de GPUs')
+        item_info_full_GPU.set_image(IMG_menu_info_gtk)
         item_info_full_GPU.connect('activate', informacion_final_PRIME)
         menu.append(item_info_full_GPU)
     else:
@@ -116,14 +171,18 @@ def build_menu(driver):
             output_nvidia_select = Estado_Nvidia_Prime_Select()
             capacidad_on_demand = prime_select_capacidad_on_demand()
             
-            item_state = gtk.MenuItem('Estado de GPU')
+            #item_state = gtk.MenuItem('Estado de GPU')
+            item_state = gtk.ImageMenuItem('Estado de GPU')
+            item_state.set_image(IMG_menu_estado_gtk)
             item_state.connect('activate', Notificacion_estado_Nvidia_Prime)
             #if (capacidad_on_demand == 'si'):
             #    if (output_nvidia_select==name_demandado_select):
             #        item_state.set_sensitive(False)
             menu.append(item_state)
             
-            item_apps_dGPU = gtk.MenuItem('Aplicaciones en dGPU')
+            #item_apps_dGPU = gtk.MenuItem('Aplicaciones en dGPU')
+            item_apps_dGPU = gtk.ImageMenuItem('Aplicaciones en dGPU')
+            item_apps_dGPU.set_image(IMG_menu_aplicaciones_gtk)
             item_apps_dGPU.connect('activate', mostrar_apps_dGPU_Nvidia_Prime)
             if (capacidad_on_demand == 'si'):
                 if (output_nvidia_select == name_demandado_select):
@@ -138,13 +197,17 @@ def build_menu(driver):
             menu.append(item_apps_dGPU)
             
             submenu = gtk.Menu()
-            menu_prime_select = gtk.MenuItem('NVIDIA Prime')
+            #menu_prime_select = gtk.MenuItem('NVIDIA Prime')
+            menu_prime_select = gtk.ImageMenuItem('NVIDIA Prime')
+            menu_prime_select.set_image(IMG_menu_nvidia_prime_gtk)
             menu.append(menu_prime_select)
             menu_prime_select.set_submenu(submenu)
             
             ###############################NUEVO
             
-            item_igpu = gtk.MenuItem('Intel (Modo Ahorro de energía)')
+            #item_igpu = gtk.MenuItem('Intel (Modo Ahorro de energía)')
+            item_igpu = gtk.ImageMenuItem('Intel (Modo Ahorro de energía)')
+            item_igpu.set_image(IMG_menu_select_intel_gtk)
             item_igpu.connect('activate', prime_select_intel)
             if (output_nvidia_select==name_intel_select):
                 item_igpu.set_sensitive(False)
@@ -156,13 +219,17 @@ def build_menu(driver):
             #    item_igpu.connect('activate', prime_select_intel)
             #    submenu.append(item_igpu)
             
-            item_nvidia = gtk.MenuItem('NVIDIA (Modo Rendimiento)')
+            #item_nvidia = gtk.MenuItem('NVIDIA (Modo Rendimiento)')
+            item_nvidia = gtk.ImageMenuItem('NVIDIA (Modo Rendimiento)')
+            item_nvidia.set_image(IMG_menu_select_nvidia_gtk)
             item_nvidia.connect('activate', prime_select_nvidia)
             if (output_nvidia_select==name_nvidia_select):
                 item_nvidia.set_sensitive(False)
             submenu.append(item_nvidia)
             
-            item_optimus = gtk.MenuItem('NVIDIA Optimus (Demandado)')
+            #item_optimus = gtk.MenuItem('NVIDIA Optimus (Demandado)')
+            item_optimus = gtk.ImageMenuItem('NVIDIA Optimus (Demandado)')
+            item_optimus.set_image(IMG_menu_select_on_demand_gtk)
             item_optimus.connect('activate', prime_select_optimus)
             if (capacidad_on_demand == 'no'):
                 item_optimus.set_sensitive(False)
@@ -177,13 +244,17 @@ def build_menu(driver):
             separador = gtk.SeparatorMenuItem()
             submenu.append(separador)
             
-            item_nvidia_settings = gtk.MenuItem('NVIDIA X Server Settings')
+            #item_nvidia_settings = gtk.MenuItem('NVIDIA X Server Settings')
+            item_nvidia_settings = gtk.ImageMenuItem('NVIDIA X Server Settings')
+            item_nvidia_settings.set_image(IMG_menu_nvidia_settings_gtk)
             item_nvidia_settings.connect('activate', Nvidia_Prime_settings)
             #item_igpu = gtk.CheckMenuItem('Intel (Modo Ahorro de energia)')
             #item_igpu.set_active(True)
             submenu.append(item_nvidia_settings)
             
-            item_nvidia_smi = gtk.MenuItem('NVIDIA SMI')
+            #item_nvidia_smi = gtk.MenuItem('NVIDIA SMI')
+            item_nvidia_smi = gtk.ImageMenuItem('NVIDIA SMI')
+            item_nvidia_smi.set_image(IMG_menu_nvidia_smi_gtk)
             item_nvidia_smi.connect('activate', Nvidia_Prime_smi)
             if (output_nvidia_select==name_intel_select):
                 item_nvidia_smi.set_sensitive(False)
@@ -191,18 +262,24 @@ def build_menu(driver):
             #item_nvidia.set_active(False)
             submenu.append(item_nvidia_smi)
             
-            item_info_full_GPU = gtk.MenuItem('Información de GPUs')
+            #item_info_full_GPU = gtk.MenuItem('Información de GPUs')
+            item_info_full_GPU = gtk.ImageMenuItem('Información de GPUs')
+            item_info_full_GPU.set_image(IMG_menu_info_gtk)
             item_info_full_GPU.connect('activate', informacion_final_Nvidia_Prime)
             menu.append(item_info_full_GPU)
     
     separador = gtk.SeparatorMenuItem()
     menu.append(separador)
     
-    item_acerca = gtk.MenuItem('Acerca')
+    #item_acerca = gtk.MenuItem('Acerca')
+    item_acerca = gtk.ImageMenuItem('Acerca')
+    item_acerca.set_image(IMG_menu_acerca_gtk)
     item_acerca.connect('activate', acerca)
     menu.append(item_acerca)
     
-    item_quit = gtk.MenuItem('Salir')
+    #item_quit = gtk.MenuItem('Salir')
+    item_quit = gtk.ImageMenuItem('Salir')
+    item_quit.set_image(IMG_menu_cerrar_gtk)
     item_quit.connect('activate', quit)
     menu.append(item_quit)
     menu.show_all()
@@ -224,7 +301,7 @@ def prime_select_intel(_):
     
     comando1 = 'pkexec prime-select'+' '+name_intel_select
     process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
-    notify.Notification.new('GPU Intel (Ahorro de energía) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesión", os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[2])).show()
+    notify.Notification.new('GPU Intel (Ahorro de energía) seleccionado:', "Para aplicar los cambios se requiere cerrar sesión (reinicio recomendado)", os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[2])).show()
     return
 
 def prime_select_nvidia(_):
@@ -235,18 +312,22 @@ def prime_select_nvidia(_):
     process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
     if (output_nvidia_select==name_intel_select or output_nvidia_select==name_radeon_select):
         # Si estamos en el iGPU con n_devices=1, no existe logo de nvidia automático. Así que lo agrego de manera manual.
-        notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesión", os.path.abspath(IMG_nvidia_geforce_logo)).show()
+        notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios se requiere cerrar sesión (reinicio recomendado)", os.path.abspath(IMG_nvidia_geforce_logo)).show()
     else:
-        notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesión", os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
+        notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios se requiere cerrar sesión (reinicio recomendado)", os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
     return
 
 def prime_select_optimus(_):
-    #output_nvidia_select = Estado_Nvidia_Prime_Select()
+    output_nvidia_select = Estado_Nvidia_Prime_Select()
     cargar_archivos = texto_archivo_basico('nvidia_prime') # Para cargar el archivo de información.
     
     comando1 = 'pkexec prime-select'+' '+name_demandado_select
     process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
-    notify.Notification.new('GPU NVIDIA (Optimus) seleccionado:', "Para aplicar los cambios, se necesitan privilegios de superusuario y cerrar la sesión", os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
+    if (output_nvidia_select==name_intel_select or output_nvidia_select==name_radeon_select):
+        # Si estamos en el iGPU con n_devices=1, no existe logo de nvidia automático. Así que lo agrego de manera manual.
+        notify.Notification.new('GPU NVIDIA (Optimus) seleccionado:', "Para aplicar los cambios se requiere cerrar sesión (reinicio recomendado)", os.path.abspath(IMG_nvidia_geforce_logo)).show()
+    else:
+        notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios se requiere cerrar sesión (reinicio recomendado)", os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
     return
 
 def prime_select_capacidad_on_demand():
@@ -461,7 +542,8 @@ def acerca(_):
     about.set_authors(autor)
     about.set_website(website)
     about.set_website_label(website_label)
-    about.set_logo_icon_name(None)
+    about.set_logo(GdkPixbuf.Pixbuf.new_from_file_at_size(IMG_video_card,64,64))
+    #about.set_logo_icon_name(None)
     about.run()
     about.destroy()
     
@@ -470,12 +552,14 @@ def acerca(_):
 def informacion_final_PRIME(_):
     driver = 'mesa_prime'
     titulo = "Información de GPUs [PRIME]"
+    titulo_barra = "Información de GPUs"
     
     mensaje = texto_archivo_basico(driver)    
 
     dialog = gtk.MessageDialog(None, gtk.DialogFlags.MODAL, gtk.MessageType.INFO, gtk.ButtonsType.NONE, titulo)
     dialog.format_secondary_text(mensaje)
     dialog.set_deletable(False)
+    dialog.set_title(titulo_barra)
     dialog.add_button("Aceptar", gtk.ResponseType.OK)
     response = dialog.run()
     dialog.destroy()
@@ -484,6 +568,7 @@ def informacion_final_PRIME(_):
 def informacion_final_Nvidia_Prime(_):
     driver = 'nvidia_prime'
     titulo = "Información de GPUs [Nvidia Prime]"
+    titulo_barra = "Información de GPUs"
     
     output_nvidia_select = Estado_Nvidia_Prime_Select()
     mensaje = texto_archivo_basico(driver)
@@ -499,6 +584,7 @@ def informacion_final_Nvidia_Prime(_):
                 dialog.format_secondary_text(mensaje+"\n\n"+"[Prime-Select]: "+output_nvidia_select+" (Modo Rendimiento)")
     
     dialog.set_deletable(False)
+    dialog.set_title(titulo_barra)
     dialog.add_button("Aceptar", gtk.ResponseType.OK)
     response = dialog.run()
     dialog.destroy()

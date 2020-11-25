@@ -30,3 +30,4 @@
 - (v0.4.0b) [08/11/2020] Muchos nombres de GPUs deberían mostrase correctamente.
 - (v0.4.0b) [08/11/2020] Se añadieron las variables globales 'name_intel_select', 'name_radeon_select', 'name_nvidia_select' y 'name_demandado_select' para cambiar su valor (texto) al ser utilizadas en 'prime-select' (por si alguna vez Nvidia cambia los nombres).
 - (v0.4.0b) [08/11/2020] Al iniciar el App Indicator, se eliminarán los archivos de salida previamente generados (muy útil en portátiles con Nvidia Prime).
+- (v0.4.2b) [25/11/2020] Se añadieron iconos a los menús.
