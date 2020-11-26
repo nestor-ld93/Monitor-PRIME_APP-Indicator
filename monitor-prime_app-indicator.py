@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 #==================================================================================
 #   +==========================================================================+  #
-#   |                    MONITOR PRIME - APP INDICATOR v0.4.2b                 |  #
+#   |                    MONITOR PRIME - APP INDICATOR v0.4.5b                 |  #
 #   +==========================================================================+  #
-#   | -Ultima actualizacion: 25/11/2020                                        |  #
+#   | -Ultima actualizacion: 26/11/2020                                        |  #
 #   +--------------------------------------------------------------------------+  #
-#   | -Copyright (C) 2020 quantum-phy (Néstor)                                 |  #
+#   | -Copyright (C) 2020 NestorBase11 (quantum-phy)                           |  #
 #   +--------------------------------------------------------------------------+  #
 #==================================================================================
 
@@ -46,7 +46,7 @@ from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Notify as notify
 from gi.repository import GdkPixbuf
 
-__VERSION__ = '0.4.2b'
+__VERSION__ = '0.4.5b'
 
 APPINDICATOR_ID = 'MONITOR PRIME - APP INDICATOR'
 archivo_prime_select = '/usr/bin/prime-select' #<=============== Para Nvidia Prime
@@ -296,38 +296,51 @@ def Nvidia_Prime_smi(_):
     return
 
 def prime_select_intel(_):
-    #output_nvidia_select = Estado_Nvidia_Prime_Select()
-    cargar_archivos = texto_archivo_basico('nvidia_prime') # Para cargar el archivo de información.
+    output_nvidia_select = Estado_Nvidia_Prime_Select()
+    #cargar_archivos = texto_archivo_basico('nvidia_prime') # Para cargar el archivo de información.
     
     comando1 = 'pkexec prime-select'+' '+name_intel_select
-    process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
-    notify.Notification.new('GPU Intel (Ahorro de energía) seleccionado:', "Para aplicar los cambios se requiere cerrar sesión (reinicio recomendado)", os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[2])).show()
+    process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    process.wait()
+    
+    linea_salida = process.communicate()
+    if (linea_salida[1] == ''):
+        notify.Notification.new('OPERACIÓN REALIZADA:', "- Prime-select (antes): "+output_nvidia_select+" \n"+"- Prime-select (después): "+name_intel_select, os.path.abspath(IMG_video_card)).show()
+        Dialogo_nvidia_prime(output_nvidia_select)
+    else:
+        notify.Notification.new('OPERACIÓN NO REALIZADA:', "- Prime-select (antes): "+output_nvidia_select+" \n"+"- Prime-select (después): "+output_nvidia_select, os.path.abspath(IMG_video_card)).show()        
     return
 
 def prime_select_nvidia(_):
     output_nvidia_select = Estado_Nvidia_Prime_Select()
-    cargar_archivos = texto_archivo_basico('nvidia_prime') # Para cargar el archivo de información.
+    #cargar_archivos = texto_archivo_basico('nvidia_prime') # Para cargar el archivo de información.
     
     comando1 = 'pkexec prime-select'+' '+name_nvidia_select
-    process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
-    if (output_nvidia_select==name_intel_select or output_nvidia_select==name_radeon_select):
-        # Si estamos en el iGPU con n_devices=1, no existe logo de nvidia automático. Así que lo agrego de manera manual.
-        notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios se requiere cerrar sesión (reinicio recomendado)", os.path.abspath(IMG_nvidia_geforce_logo)).show()
+    process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    process.wait()
+    
+    linea_salida = process.communicate()
+    if (linea_salida[1] == ''):
+        notify.Notification.new('OPERACIÓN REALIZADA:', "- Prime-select (antes): "+output_nvidia_select+" \n"+"- Prime-select (después): "+name_nvidia_select, os.path.abspath(IMG_video_card)).show()
+        Dialogo_nvidia_prime(output_nvidia_select)
     else:
-        notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios se requiere cerrar sesión (reinicio recomendado)", os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
+        notify.Notification.new('OPERACIÓN NO REALIZADA:', "- Prime-select (antes): "+output_nvidia_select+" \n"+"- Prime-select (después): "+output_nvidia_select, os.path.abspath(IMG_video_card)).show()        
     return
 
 def prime_select_optimus(_):
     output_nvidia_select = Estado_Nvidia_Prime_Select()
-    cargar_archivos = texto_archivo_basico('nvidia_prime') # Para cargar el archivo de información.
+    #cargar_archivos = texto_archivo_basico('nvidia_prime') # Para cargar el archivo de información.
     
     comando1 = 'pkexec prime-select'+' '+name_demandado_select
-    process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=None, shell=True)
-    if (output_nvidia_select==name_intel_select or output_nvidia_select==name_radeon_select):
-        # Si estamos en el iGPU con n_devices=1, no existe logo de nvidia automático. Así que lo agrego de manera manual.
-        notify.Notification.new('GPU NVIDIA (Optimus) seleccionado:', "Para aplicar los cambios se requiere cerrar sesión (reinicio recomendado)", os.path.abspath(IMG_nvidia_geforce_logo)).show()
+    process = subprocess.Popen(comando1, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    process.wait()
+    
+    linea_salida = process.communicate()
+    if (linea_salida[1] == ''):
+        notify.Notification.new('OPERACIÓN REALIZADA:', "- Prime-select (antes): "+output_nvidia_select+" \n"+"- Prime-select (después): "+name_demandado_select, os.path.abspath(IMG_video_card)).show()
+        Dialogo_nvidia_prime(output_nvidia_select)
     else:
-        notify.Notification.new('GPU NVIDIA (Rendimiento) seleccionado:', "Para aplicar los cambios se requiere cerrar sesión (reinicio recomendado)", os.path.abspath(mostrar_info_GPU(archivo_info_gpus)[3])).show()
+        notify.Notification.new('OPERACIÓN NO REALIZADA:', "- Prime-select (antes): "+output_nvidia_select+" \n"+"- Prime-select (después): "+output_nvidia_select, os.path.abspath(IMG_video_card)).show()        
     return
 
 def prime_select_capacidad_on_demand():
@@ -524,11 +537,11 @@ def escribir_texto_archivo(texto,archivo_info_gpus):
     archivo.close()
 
 def acerca(_):
-    autor = ["quantum-phy (Néstor)"]
+    autor = ["NestorBase11 (quantum-phy)"]
     mensaje  = "App indicator que muestra el GPU renderizador, PID-Proceso en dGPU, información de GPUs "
     mensaje += "y selección de GPUs (Nvidia Prime) en portátiles con gráficos híbridos. "
     mensaje += "\n[Para Drivers Open-Source (Mesa) y/o Privativos (Nvidia-Prime)]"
-    copyright = "2018-2020 - quantum-phy (Néstor)"
+    copyright = "2018-2020 - NestorBase11 (quantum-phy)"
     licencia = "Licencia Pública General de GNU, versión 3"
     website = "https://github.com/nestor-ld93/Monitor-PRIME_APP-Indicator"
     website_label = "Sitio web GitHub"
@@ -552,7 +565,7 @@ def acerca(_):
 def informacion_final_PRIME(_):
     driver = 'mesa_prime'
     titulo = "Información de GPUs [PRIME]"
-    titulo_barra = "Información de GPUs"
+    titulo_barra = APPINDICATOR_ID
     
     mensaje = texto_archivo_basico(driver)    
 
@@ -568,7 +581,7 @@ def informacion_final_PRIME(_):
 def informacion_final_Nvidia_Prime(_):
     driver = 'nvidia_prime'
     titulo = "Información de GPUs [Nvidia Prime]"
-    titulo_barra = "Información de GPUs"
+    titulo_barra = APPINDICATOR_ID
     
     output_nvidia_select = Estado_Nvidia_Prime_Select()
     mensaje = texto_archivo_basico(driver)
@@ -583,6 +596,21 @@ def informacion_final_Nvidia_Prime(_):
             if(output_nvidia_select==name_nvidia_select):
                 dialog.format_secondary_text(mensaje+"\n\n"+"[Prime-Select]: "+output_nvidia_select+" (Modo Rendimiento)")
     
+    dialog.set_deletable(False)
+    dialog.set_title(titulo_barra)
+    dialog.add_button("Aceptar", gtk.ResponseType.OK)
+    response = dialog.run()
+    dialog.destroy()
+    return response
+
+def Dialogo_nvidia_prime(output_nvidia_select):
+    titulo = "Nvidia Prime-select"
+    titulo_barra = APPINDICATOR_ID
+    
+    mensaje = "Cierre sesión del sistema para aplicar los cambios\n(reinicio recomendado)."
+    
+    dialog = gtk.MessageDialog(None, gtk.DialogFlags.MODAL, gtk.MessageType.INFO, gtk.ButtonsType.NONE, titulo)
+    dialog.format_secondary_text(mensaje)
     dialog.set_deletable(False)
     dialog.set_title(titulo_barra)
     dialog.add_button("Aceptar", gtk.ResponseType.OK)
